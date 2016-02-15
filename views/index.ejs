@@ -1,0 +1,263 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<title>Shopping Cart</title>
+	<link rel="stylesheet" href="css/css_newtheme/style.css" type="text/css" media="all" /> 
+
+
+	<!--[if lte IE 6]>
+		<style type="text/css" media="screen">
+			.tabbed { height:420px; }
+		</style>
+	<![endif]-->
+	<script src="js/js_newtheme/jquery-1.4.1.min.js" type="text/javascript"></script>
+	<script src="js/js_newtheme/jquery.jcarousel.pack.js" type="text/javascript"></script>
+	<script src="js/js_newtheme/jquery.slide.js" type="text/javascript"></script>
+	<script src="js/js_newtheme/jquery-func.js" type="text/javascript"></script>
+
+	
+<script type="text/javascript">
+
+	function saveuserating(usefullID)
+	{
+//alert("id value is :"+usefullID);
+		splitspace = usefullID.split(" ");
+		splitdash = splitspace[0].split("-");
+		ratedvalue = splitdash[1]; //PRODUCT RATING
+		CategoryValue = splitspace[1];
+		ProductValue = splitspace[2];
+		console.log("Rated Values = "+ratedvalue);
+		console.log("Category Values = "+CategoryValue);
+		console.log("Product Values = "+ProductValue);
+		var cartproductid = $('#productidValue-'+CategoryValue+'-'+ProductValue).val();//RATED PRODUCT ID
+//DELETE THE INPUT TYPE HIDDEN FOR PRODUCT RATING
+		//console.log("Product id::"+cartproductid);
+		//console.log("Product rating::"+productrating);
+		var params = {CartProductID: cartproductid,
+					  ProductRating: ratedvalue 	 };
+		$.ajax({
+	        url: 'http://localhost:3000/RateProduct',
+	        dataType: "text",
+	        data: params,
+	        success: function(data) 
+	        {	
+	        	if(data=='success'){
+	        		console.log("producted rated successfully.");
+	        		//window.location.href = "/productcartdetails";
+	        	}
+	        	else if(data=='loginfirst'){
+	        		console.log("need to login first");
+	        		window.location.href = "/login";	
+	        	}
+	        	else{
+	            	console.log(data);
+	            	//window.location.href = "/productcartdetails";
+	        	}    
+	        },	
+	        error: function(jqXHR, textStatus, errorThrown) 
+	        {
+	            console.log('error ' + textStatus + " " + errorThrown);
+	        }
+    	});
+	}
+
+	function userreview(someflag)
+	{
+		var valueid = someflag.split("-");
+		console.log("Value of id = "+valueid[1]);   
+		console.log("product Id value is = "+ $('#productkid-'+valueid[1]).val());
+		console.log("User comment value is ="+ $('#usercomment-'+valueid[1]).val());
+	}
+</script>
+
+<style type="text/css">
+	.perproduct{
+		min-height: 300px;
+		max-height: 400px;
+		width: 300px;
+	}
+</style>
+</head>
+<body>
+<!-- Top -->
+<div id="top">
+	<div class="shell">
+		<!-- Call Header -->
+		<% include header %>
+		<!-- End Header -->
+		<!-- Slider -->
+		<% include slider %>
+		<!-- End Slider -->
+	</div>
+</div>
+<!-- Top -->
+
+<!-- Main -->
+<div id="main">
+	<div class="shell">
+		
+		<!-- call optionsNAV(second white navigation) -->
+		<% if(user)
+		{	var totalcartamount=0;
+			//console.log("cartdetails are :::::::: "+cartdetails+"::::::");
+			for(var flg=0; flg<cartdetails.length; flg++)
+			{
+				var totalcartamount=totalcartamount+cartdetails[flg].productPrice;
+			}
+		}
+		%>
+			<div class="options">
+				<!--<div class="search">
+                    <form action="" method="post">
+                        <span class="field"><input type="text" class="blink" value="SEARCH" title="SEARCH" /></span>
+                        <input type="text" class="search-submit" value="GO" />
+                    </form>
+                </div>
+                <span class="left"><a href="#">Advanced Search</a></span>
+                -->
+				<div class="right">
+					<span class="cart">
+						<a href="/productcartdetails" class="cart-ico">&nbsp;</a>
+						<% if(user){ %>
+							<strong><%= totalcartamount %>&nbsp;&#x20b9;</strong>
+						<% }else{ %>
+							<strong>0&nbsp;&#x20b9;</strong>
+						<% } %>
+						
+					</span>
+					<span class="left more-links">
+						<!--<a href="#">Checkout</a>-->
+						<a href="/productcartdetails">Details</a>
+					</span>
+				</div>
+			</div>
+		<!-- end optionsNAV -->
+		
+		<!-- Content -->
+		<div id="content" style="min-height:900px;">
+			<!-- Tabs -->
+			<div class="tabs">
+				<ul>
+					<%
+					for(var i=0; i<categories.length; i++) { 
+	                    if(categories[i].CategoryStatus=='Online'){ 
+	                    	%>
+	                    <li><a href="#" class="active"><span class='category <%= i %>'><%= categories[i].CategoryName %></span></a></li>
+	                <% }} %>
+				   <!-- <li><a href="#" class="active"><span>Safety Shoes</span></a></li>
+				    <li><a href="#"><span>Sport Shoes</span></a></li>-->
+				    <!--<li><a href="#" class="red"><span>More Shoes</span></a></li>-->
+				</ul>
+			</div>
+			<!-- Tabs -->
+			<!-- Container -->
+			<div id="container">
+				<div class="tabbed">
+					<!-- First Tab Content -->
+					<% for(var j=0; j<categories.length; j++) 
+					{ %>
+						
+						<div class="tab-content" style="">
+							<center>
+							<div class="items">
+								<div class="cl">&nbsp;</div>
+							    <ul>
+							      <% for(var i=0; i<products.length; i++) 
+							      { 
+							      	if(products[i].ProductCategory==categories[j].CategoryName && products[i].ProductAvailable=='Online') { %>
+							      	<li class="perproduct cat<%= j %> product<%= i %>" height="290px" width="150px">
+								    	<div class="image" style="height:200px;">
+								    		<a href="/SelectedProdDetail?prodid=<%= products[i]._id %>"><img class="productpagelink" id="cat<%= j %> prod<%= i %>" height="180px;" width="100%;" style="cursor:pointer;" src="<%= products[i].ProductImage %>" alt="<%= products[i].ProductImage %>" /></a>
+								    	</div>
+								    	<p>
+								    		<input type="hidden" id="productclass" value="prod<%= i %>">
+								    		<input type="hidden" id="categoryclass" value="cat<%= j %>">
+								    		<div style="height:40px; width:100%; margin-top:7px; padding-bottom:5px; ">
+								    			<b>Product Name:</b> <span><a href="/SelectedProdDetail?prodid=<%= products[i]._id %>"><span id="cat<%= j %> prod<%= i %>" class="productpagelink" style="color:black; font-weight:bold; cursor:pointer"><%= products[i].ProductName %></span></a></span>
+								    		</div>
+								    							    	
+								    	</p>
+								    	<div id="productratingvalues" style="margin-left: 40%; padding-bottom:5px;">
+								    		<span style="margin-top:10px;">
+								    			<% if(products[i].ProductAvgRating==0){ %>
+													<img align="right" src="images/0star.png" style="margin-top:8px" id="Star0" height="20px" width="100px">
+												<% } %>
+												<% if(products[i].ProductAvgRating==1){ %>
+													<img align="right" src="images/0star.png" style="margin-top:8px" id="Star1" height="20px" width="100px">
+												<% } %>
+												<% if(products[i].ProductAvgRating==2){ %>
+													<img align="right" src="images/2star.png" style="margin-top:8px" id="Star2" height="20px" width="100px">
+												<% } %>
+												<% if(products[i].ProductAvgRating==3){ %>
+													<img align="right" src="images/3star.png" style="margin-top:8px" id="Star3" height="20px" width="100px">
+												<% } %>
+												<% if(products[i].ProductAvgRating==4){ %>
+													<img align="right" src="images/4star.png" style="margin-top:8px" id="Star4" height="20px" width="100px">
+												<% } %>
+												<% if(products[i].ProductAvgRating==5){ %>
+													<img align="right" src="images/5star.png" style="margin-top:8px" id="Star5" height="20px" width="100px">
+												<% } %>
+											</span>
+								    	</div>
+
+								    	<p class="productprice"><span class="productprice"><b><font color="grey">List Price:</font> </b><font color="green"><strong><del>&#8377;<%= products[i].ProductListPrice %>&nbsp;&#x20b9;</del></strong></font>
+
+								    	</span><br />
+								    	 <b>Sale Price:</b> <font color="#890000"><strong>&#8377;<%= products[i].ProductSalePrice %>&nbsp;&#x20b9;</strong></font></p>
+								    	 <a href="/addtocart?productID=<%= products[i]._id %>&productamount=<%= products[i].ProductSalePrice %>"><img src="images/addtocartimage.png" style="margin-top:10px; margin-bottom:10px;"></a>
+								    </li>
+								    
+							      <% } } %>
+							    </ul>
+							</div>	
+							</center>      
+						</div>
+
+					<% } %>
+				</div>	
+			</div>
+<!-- End Footer -->
+			<!-- End Container -->
+		</div>
+		<!-- End Content -->
+		<div class="brands" style="padding-top:30px;">
+			<h3>Brands</h3>
+			<div class="logos">
+				<a href="#"><img src="css/css_newtheme/images/logo1.gif" alt="" /></a>
+				<a href="#"><img src="css/css_newtheme/images/logo2.gif" alt="" /></a>
+				<a href="#"><img src="css/css_newtheme/images/logo3.gif" alt="" /></a>
+				<a href="#"><img src="css/css_newtheme/images/logo4.gif" alt="" /></a>
+				<a href="#"><img src="css/css_newtheme/images/logo5.gif" alt="" /></a>
+				
+			</div>
+		</div>
+		<!--Call Footer -->
+		<% include footer %>
+		  
+	</div>
+</div>
+<!-- End Main --> 
+<style type="text/css">
+	.subpages
+	  { 
+	  	display: none;
+	  }
+</style>
+	<script type="text/javascript">
+	   $('.category').click(function(){
+	   		$('.perproduct').show();
+	   		$('.subpages').css('display', 'block');
+	   });
+	   $('.productpagelink').click(function(){
+	   		//console.log(this.id);	   		
+	   		var idvalue = this.id+"";
+	   		var classvalues = idvalue.split(" ");
+	   		$('.'+classvalues[0]).hide();
+	   		$('.'+classvalues[1]).show();	
+	   });
+
+	</script>
+
+</body>
+</html>

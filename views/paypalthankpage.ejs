@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Shopping cart</title>
+	<link rel="stylesheet" href="css/css_newtheme/style.css" type="text/css" media="all" />
+    <script src="js/js_newtheme/jquery-1.4.1.min.js" type="text/javascript"></script>
+    <script src="js/js_newtheme/jquery.jcarousel.pack.js" type="text/javascript"></script>
+    <script src="js/js_newtheme/jquery.slide.js" type="text/javascript"></script>
+    <script src="js/js_newtheme/jquery-func.js" type="text/javascript"></script>
+	<script>
+    	paypal.minicart.reset();
+	</script>
+</head>
+<body>
+	<!-- Top -->
+      <div id="top" style="height:80px">
+          <div class="shell">
+              <!-- Call Header -->
+              <% include header %>
+              <!-- End Header -->
+              <!-- Slider -->
+
+              <!-- End Slider -->
+          </div>
+      </div>
+  <!-- Top -->
+	<div class="tabbed">
+  		<div class="tab-content" style="display: block;">  
+  			<h3>Payment Done.<a href="http://localhost:3000/"> Click here</a> to go to Home page.</h3>
+  		</div>
+  	</div>
+  	<div id="container" style="margin-bottom:0px;">
+        <div class="brands">
+            <h3>Brands</h3>
+            <div class="logos">
+                <a href="#"><img src="css/css_newtheme/images/logo1.gif" alt="" /></a>
+                <a href="#"><img src="css/css_newtheme/images/logo2.gif" alt="" /></a>
+                <a href="#"><img src="css/css_newtheme/images/logo3.gif" alt="" /></a>
+                <a href="#"><img src="css/css_newtheme/images/logo4.gif" alt="" /></a>
+                <a href="#"><img src="css/css_newtheme/images/logo5.gif" alt="" /></a>
+            </div>
+        </div>
+        <!--Call Footer -->
+        <% include footer %>                
+        <!-- End Footer -->
+    </div>	
+</body>
+</html>

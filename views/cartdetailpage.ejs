@@ -1,0 +1,364 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<title>Shopping Cart</title>
+	<link rel="stylesheet" href="css/css_newtheme/style.css" type="text/css" media="all" />
+	<!--[if lte IE 6]>
+		<style type="text/css" media="screen">
+			.tabbed { height:420px; }
+		</style>
+	<![endif]-->
+	<script src="js/js_newtheme/jquery-1.4.1.min.js" type="text/javascript"></script>
+	<script src="js/js_newtheme/jquery.jcarousel.pack.js" type="text/javascript"></script>
+	<script src="js/js_newtheme/jquery.slide.js" type="text/javascript"></script>
+	<script src="js/js_newtheme/jquery-func.js" type="text/javascript"></script>
+	<style type="text/css">
+		.items ul li {
+		  height:350px;
+		  }
+		  .subpages
+		  {
+		  	display: none;
+		  }
+.button {
+	font-family: 'Droid Sans', sans-serif;
+	-webkit-border-radius: 25px;
+	-moz-border-radius: 25px;
+	border-radius: 25px;
+	margin: 15px;
+	border: 1px solid rgba(0,0,0,0.4) ;
+	box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.5),
+				0 0 1px 1px rgba(255,255,255,0.8),
+				0 0 0 6px rgba(0,0,0,0.06),
+				0 0 0 3px rgba(0,0,0,0.1);
+	cursor: pointer;
+}
+.title {
+	padding: 10px;
+	float: left;
+	color: #fff;
+	font-weight: 800;
+	font-size: 20px;
+	text-shadow: 1px 1px rgba(0,0,0,0.2);
+	text-transform: uppercase;
+	/*border-right: 1px solid rgba(255,255,255,0.3);*/
+}
+.price {
+	padding: 10px;
+	float: left;
+	color: rgba(0,0,0,0.4);
+	font-weight: 800;
+	font-size: 20px;
+	text-shadow: 1px 1px rgba(255,255,255,0.3);
+	text-transform: uppercase;	
+	border-left: 1px solid rgba(0,0,0,0.2);
+}
+
+/* colors */
+.yellow {
+	background: rgb(255,214,94);
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZDY1ZSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmZWJmMDQiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  rgba(255,214,94,1) 0%, rgba(254,191,4,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,214,94,1)), color-stop(100%,rgba(254,191,4,1)));
+	background: -webkit-linear-gradient(top,  rgba(255,214,94,1) 0%,rgba(254,191,4,1) 100%);
+	background: -o-linear-gradient(top,  rgba(255,214,94,1) 0%,rgba(254,191,4,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(255,214,94,1) 0%,rgba(254,191,4,1) 100%);
+	background: linear-gradient(top,  rgba(255,214,94,1) 0%,rgba(254,191,4,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffd65e', endColorstr='#febf04',GradientType=0 );
+}
+
+.yellow:hover {
+	background: rgb(254,191,4);
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZlYmYwNCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmZmQ2NWUiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  rgba(254,191,4,1) 0%, rgba(255,214,94,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(254,191,4,1)), color-stop(100%,rgba(255,214,94,1)));
+	background: -webkit-linear-gradient(top,  rgba(254,191,4,1) 0%,rgba(255,214,94,1) 100%);
+	background: -o-linear-gradient(top,  rgba(254,191,4,1) 0%,rgba(255,214,94,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(254,191,4,1) 0%,rgba(255,214,94,1) 100%);
+	background: linear-gradient(top,  rgba(254,191,4,1) 0%,rgba(255,214,94,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#febf04', endColorstr='#ffd65e',GradientType=0 );
+}
+
+.green {
+	background: rgb(143,200,0);
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzhmYzgwMCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM2NjhlMDAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  rgba(143,200,0,1) 0%, rgba(102,142,0,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(143,200,0,1)), color-stop(100%,rgba(102,142,0,1)));
+	background: -webkit-linear-gradient(top,  rgba(143,200,0,1) 0%,rgba(102,142,0,1) 100%);
+	background: -o-linear-gradient(top,  rgba(143,200,0,1) 0%,rgba(102,142,0,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(143,200,0,1) 0%,rgba(102,142,0,1) 100%);
+	background: linear-gradient(top,  rgba(143,200,0,1) 0%,rgba(102,142,0,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#8fc800', endColorstr='#668e00',GradientType=0 );
+}
+.green:hover {
+	background: rgb(102,142,0);
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzY2OGUwMCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM4ZmM4MDAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  rgba(102,142,0,1) 0%, rgba(143,200,0,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(102,142,0,1)), color-stop(100%,rgba(143,200,0,1)));
+	background: -webkit-linear-gradient(top,  rgba(102,142,0,1) 0%,rgba(143,200,0,1) 100%);
+	background: -o-linear-gradient(top,  rgba(102,142,0,1) 0%,rgba(143,200,0,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(102,142,0,1) 0%,rgba(143,200,0,1) 100%);
+	background: linear-gradient(top,  rgba(102,142,0,1) 0%,rgba(143,200,0,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#668e00', endColorstr='#8fc800',GradientType=0 );
+}
+	</style>
+</head>
+<body>
+<!-- Top -->
+<div id="top">
+	<div class="shell">
+		<!-- Call Header -->
+		<% include header %>
+		<!-- End Header -->
+		<!-- Slider -->
+		<% include slider %>
+		<!-- End Slider -->
+	</div>
+</div>
+<!-- Top -->
+
+<!-- Main -->
+<div id="main">
+	<div class="shell">
+		
+		<!-- call optionsNAV(second white navigation) -->
+		<% if(user)
+		{	
+			var totalcartamount=0;
+			if(cartempty!='true')
+			{
+				for(var flg=0; flg<productprice.length; flg++)
+				{
+					var totalcartamount=totalcartamount+productprice[flg];
+				}
+			}
+		}
+		%>
+	<form method="post" name="myform" action="https://www.sandbox.paypal.com/cgi-bin/webscr" target="paypal">	
+		<input type="hidden" name="item_number" value="<%= flg %>" />
+			<div class="options">
+				<div class="search">
+					<!--<form action="" method="post">-->
+						<span class="field"><input type="text" class="blink" value="SEARCH" title="SEARCH" /></span>
+						<input type="text" class="search-submit" value="GO" />
+					<!--</form>-->
+				</div>
+				<span class="left"><a href="#">Advanced Search</a></span>
+				
+				<div class="right">
+					<span class="cart">
+						<a href="/productcartdetails" class="cart-ico">&nbsp;</a>
+						<% if(user){ %>
+							<strong class="CartTotal"><span class="CartTotalValue"><%= totalcartamount %></span>&nbsp;&#x20b9;</strong>
+							<input type="hidden" name="GrandTotal" id="GrandTotal" value="<%= flg %>" >
+						<% }else{ %>
+							<strong class="CartTotal">0&nbsp;&#x20b9;</strong>
+						<% } %>
+						
+					</span>
+					<span class="left more-links">
+						<!--<a href="#">Checkout</a>-->
+						<a href="/productcartdetails">Details</a>
+					</span>
+				</div>
+			</div>
+		<!-- end optionsNAV -->
+		
+		<!-- Content -->
+		<div id="content" style="min-height:850px;">
+			<!-- Tabs -->
+			
+			<!-- Tabs -->
+			<!-- Container -->
+			<div id="container">
+				<div class="tabbed">
+					<!-- First Tab Content -->
+					
+					<!--FOR SHOPPING CART-->
+					<style type="text/css">
+					table{
+						width:100%;
+					}
+					td{
+						text-align: center;
+					}
+					tr{
+						border-bottom: 2px solid grey;
+						margin-top: 10px;
+						margin-bottom: 10px;
+					}
+					</style>	
+					<div id="productdetails">
+					<% if(cartempty=='true') { %>
+						<span style="color:grey; font-weight:bold; font-size:16px;">
+						<h2>Your cart is empty. Please <a href="/">continue shopping</a> and add some items.</h2>
+						</span>
+					<% }else{ %>
+						<table border="0">
+							<tr>
+								<th>Cart Items</th>
+								<th></th>
+								<th>Price</th>
+								<th>Quantity</th>
+								<th></th>
+								<th>Total</th>
+							</tr>
+							<% if(user)
+							{	
+								/var totalcartamount=0;/
+								for(var tmp=0; tmp<productprice.length; tmp++)
+								{
+									%>
+									</tr style="border-bottom: 3px solid grey;">
+										<td><img src="<%= productimgurl[tmp] %>" style="width:180px; height:120px" alt="" /></td>
+										<td id="productdesc"><span>
+										<b><%= productnames[tmp] %></b><br />
+										<%= productshordesc[tmp] %>
+										</td>
+										<td id="productprice"><input type="hidden" id="productprice<%= tmp %>" value="<%= productprice[tmp] %>"><%= productprice[tmp] %></td>
+										<td><input type="number" value="1" min="1" style="width:35px;" id="productqty<%= tmp %>"></td>
+										<td><span style="cursor: pointer" class="updatebutton" id="<%= tmp %>"><b>Update</b></span><br /><span style="cursor: pointer" class="deletebutton" id="<%= productid[tmp] %>" onclick="deletecartproduct(this.id)"><b>Delete</b></span></td>
+										<td><span id="productotal<%= tmp %>"><%= productprice[tmp] %></span>&nbsp;&#x20b9;</td>
+									</tr>
+									<%
+								}
+							}
+							%>
+							<tr>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td><table>
+									<tr>
+										<td>Subtotal</td>
+										<td><span class="itemsubtotal"><%= totalcartamount %>
+
+										</span>&nbsp;&#x20b9;</td>
+									</tr>
+									<tr>
+										<td>Tax (4%)</td>
+										<td><span class="TaxValue"><%= totalcartamount*0.04 %>
+										</span>&nbsp;&#x20b9;</td>
+									</tr>
+									<tr>
+										<td>Shipping</td>
+										<td><span class="Shippingcart"><%= 30 %></span>&nbsp;&#x20b9;</td>
+									</tr>
+									<tr>
+										<td>Grand Total</td>
+										<td><span class="AmountToPay"><%= totalcartamount+totalcartamount*0.04+30 %></span>&nbsp;&#x20b9;</td>
+									</tr>
+									<tr>
+										<td colspan="2"><input type="submit" name="submit" style="height:35px; font-weight:bold; padding:4px 30px 4px 30px; font-size:16px" value="Checkout"></td>
+									</tr>
+								</table></td>
+							</tr>
+						</table>
+					<% } %>		
+						
+		<input type="hidden" name="cmd" value="_cart">
+        <input type="hidden" name="business" value="amardeep.chauhan@laitkor.com">
+        <input type="hidden" name="shipping" value="1.00">
+        <input type="hidden" name="shipping2" value="0.50">
+        <input type="hidden" name="handling" value="2.00">
+        <input type="hidden" name="currency_code" value="INR">
+        <input type="hidden" name="return" value="http://localhost:3000/paypalthank">
+        <input type="hidden" name="undefined_quantity" value="1">
+        <input type="hidden" name="add" value="1">
+        <input type="hidden" name="amount" id="paymentamount" value="<%= totalcartamount %>">
+        <input type="hidden" name="item_name" id="item_name" value="Shopping products">				
+
+	</form>				
+					</div>
+
+					<!--FOR SHOPPING CART-->
+				</div>	
+			</div>
+
+<!-- End Footer -->
+			<!-- End Container -->
+		</div>
+		<!-- End Content -->
+		<div class="brands" style="padding-top:30px;">
+			<h3>Brands</h3>
+			<div class="logos">
+				<a href="#"><img src="css/css_newtheme/images/logo1.gif" alt="" /></a>
+				<a href="#"><img src="css/css_newtheme/images/logo2.gif" alt="" /></a>
+				<a href="#"><img src="css/css_newtheme/images/logo3.gif" alt="" /></a>
+				<a href="#"><img src="css/css_newtheme/images/logo4.gif" alt="" /></a>
+				<a href="#"><img src="css/css_newtheme/images/logo5.gif" alt="" /></a>
+				
+			</div>
+		</div>
+		<!--Call Footer -->
+		<% include footer %>
+		
+	</div>
+</div>
+<!-- End Main --> 
+	<script type="text/javascript">
+	$('.updatebutton').click(function(){
+		var pro_price = "productprice"+this.id;
+		var pro_qty = "productqty"+this.id;
+		var prodtotal = "#productotal"+this.id;
+		var TotalValue = $('#'+pro_price).val() * $('#'+pro_qty).val();
+		$(prodtotal).html(TotalValue);
+		var totalitems = $('#GrandTotal').val();
+		//console.log("Total items are:" +totalitems);
+		//console.log($('#productotal3').val());
+		var grandTotal = 0
+		for(var k=0; k<totalitems; k++)
+		{
+			var productTotal = $('#productprice'+k).val()*$('#productqty'+k).val();
+			grandTotal = grandTotal + productTotal;
+			//console.log("Total "+k+": "+productTotal);
+		}
+
+		//console.log(grandTotal);
+		$('.CartTotalValue').html(grandTotal);
+		$('.itemsubtotal').html(grandTotal);
+
+		//$('.CartTotal').html(TotalValue);
+		var TaxValue = grandTotal*(.04);
+		var TaxValue = Math.floor(TaxValue);
+		$('.TaxValue').html(TaxValue);
+
+		var Shippingamount = 30;
+		$('.Shippingcart').html(Shippingamount);
+		var AmountToPay = Math.floor(grandTotal)+Math.floor(TaxValue)+Math.floor(Shippingamount);
+		$('.AmountToPay').html(AmountToPay);
+		document.getElementById('paymentamount').value=AmountToPay;
+		
+		});
+
+	function deletecartproduct(cartproductID)
+	{
+		//console.log(cartproductID);
+		var params = { cartproductid: cartproductID };
+		$.ajax({
+	        url: 'http://localhost:3000/DeleteCartProduct',
+	        dataType: "text",
+	        data: params,
+	        success: function(data) 
+	        {	
+	        	if(data='success'){
+	        		console.log("cart product deleted.");
+	        		window.location.href = "/productcartdetails";
+	        	}
+	        	else{
+	            	console.log("Something went wrong. Can't delete this cart product.");
+	            	window.location.href = "/productcartdetails";
+	        	}    
+	        },	
+	        error: function(jqXHR, textStatus, errorThrown) 
+	        {
+	            console.log('error ' + textStatus + " " + errorThrown);
+	        }
+    	});
+	}
+	</script>
+</body>
+</html>

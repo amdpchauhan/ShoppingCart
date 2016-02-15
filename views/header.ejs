@@ -1,0 +1,31 @@
+<div id="header">
+	<h1 id="logo"><a href="#">Urgan Gear</a></h1>
+	<div id="navigation">
+		<ul>
+			<li><a href="/">Home</a></li>
+			<% if(user){ %>
+				<% if(session.userole=='admin') { %>
+					<!--<li><a href="/admindex">Admin Home</a></li>
+					<li><a href="/">Site Home</a></li>-->
+					<li><a href="/categorymgmt">Manage Categories</a></li>
+                    <li><a href="/productmgmt">Manage Products</a></li>
+			    <% } %>
+			<% } %>
+		    <li><a href="/AboutUsPage">About</a></li>
+			<li><a href="/ServicePage">Service</a></li>
+			<li><a href="/ContactPage">Contact</a></li>
+			<%  if(user) { %>
+                    <li>
+                        <a href="/logout">Logout</a>
+                    </li>
+            <% } else{ %>
+                <li>
+                    <a href="/login">Login</a>
+                </li>
+                <li>
+                    <a href="/register">Register</a>
+                </li>
+            <% } %>
+		</ul>
+	</div>
+</div>

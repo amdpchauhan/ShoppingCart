@@ -1,0 +1,917 @@
+var express = require('express');
+var router = express.Router();
+//var localstorage = require('localStorage');
+var nodemailer = require('nodemailer');
+var admin = require('./admin');
+var passport = require('passport');
+var Account = require('../model/user');
+var CategorySchema = require('../model/categorySchema.js');
+var ProductSchema = require('../model/productSchema.js');
+var cartSchema = require('../model/cartblschema.js');
+var ProductRatingSchema = require('../model/ProductRatingSchema.js');
+var multipart = require('connect-multiparty');
+var multipartMiddleware = multipart();
+var fs = require('fs');
+var categoryList="", productList="";  
+
+var flash = require('express-flash');
+var session = require('express-session');
+router.use(flash());
+
+router.use(function(req, res, next){
+    // if there's a flash message in the session request, make it available in the response, then delete it
+    res.locals.sessionFlash = req.session.sessionFlash;
+    delete req.session.sessionFlash;
+    next();
+});
+/* GET home page. */
+
+router.get('/', function (req, res, next) {
+	if(req.user)
+		req.session.userole = req.user.Role;
+	else
+		req.session.userole = '';
+
+    if(req.query.CatSelected)
+    {
+       ProductSchema.find({'ProductCategory' : req.query.CatSelected} ,function (error, result) {
+        if(error)
+        {
+          console.log("Got error in fetching data from database.");
+        }
+        else
+        {
+          productList = result;
+          CategorySchema.find({},function (error, result) {
+		      if(error)
+		      {
+		        console.log("Got error in fetching data from database.");
+		      }
+		      else
+		      {
+		      	categoryList = result;
+		  		if(req.user)
+		  		{
+		  			cartSchema.find({UserID: req.user._id}, function (error, result){
+			      		if(error)
+			      		{
+			      			console.log('Not able to find product details');
+			      		}
+			      		else
+			      		{	
+			      			var cartinfo = result;
+			      			res.render('index',{session:req.session, user : req.user, categories: categoryList, products: productList, cartdetails: cartinfo});
+			  				res.end("Ending ..");		
+			      		}
+		      		});
+		  		}
+		  		else
+		  		{
+		  			res.render('index',{session:req.session, user : req.user,categories: categoryList, products: productList});
+			  			res.end("Ending .."); 
+		  		}
+		      }
+	   	  });
+        }
+      });
+   }
+   else
+   {
+      ProductSchema.find({},function (error, result) {
+        if(error)
+        {
+          //res.send({'result':'error'});
+          console.log("Got error in fetching data from database.");
+        }
+        else
+        {
+          //console.log(result);
+          		productList = result;
+            	CategorySchema.find({},function (error, result) {
+		      if(error)
+		      {
+		        console.log("Got error in fetching data from database.");
+		      }
+		      else
+		      {
+		      	categoryList = result;
+		  		if(req.user)
+		  		{
+		  			cartSchema.find({UserID: req.user._id}, function (error, result){
+			      		if(error)
+			      		{
+			      			console.log('Not able to find product details');
+			      		}
+			      		else
+			      		{	
+			      			var cartinfo = result;
+			      			res.render('index',{session:req.session, user : req.user, categories: categoryList, products: productList, cartdetails: cartinfo});
+			  				res.end("Ending ..");		
+			      		}
+		      		});
+		  		}
+		  		else
+		  		{
+		  			res.render('index',{session:req.session, user : req.user,categories: categoryList, products: productList});
+			  			res.end("Ending .."); 
+		  		}
+		      }
+	   	  });
+          //console.info(" result:"+ JSON.stringify(result));
+        }
+      });
+   }
+});
+
+
+
+
+//ADMIN FUNCTIONALITIES
+/*router.get('/admindex', function (req, res){
+	
+	if(req.user)
+			req.session.userole = req.user.Role;
+		else
+			req.session.userole = '';	
+	if(req.query.CatSelected)
+    {	
+      ProductSchema.find({'ProductCategory' : req.query.CatSelected} ,function (error, result) 
+      {
+          productList = result; ////////////third
+            CategorySchema.find({},function (error, result) {
+              if(error)
+              {
+                console.log("Got error in fetching data from database.");
+              }
+              else
+              {
+                categoryList = result;
+                res.render('adminhome',{session:req.session, user : req.user, categories: categoryList, products: productList});////second
+                res.end("Ending ..");
+              }
+            });
+      });
+   }
+   else
+   {
+    console.log("Category not selected.");
+      ProductSchema.find({},function (error, result) {
+        if(error)
+        {
+          //res.send({'result':'error'});
+          console.log("Got error in fetching data from database.");
+        }
+        else
+        {
+          //console.log(result);
+          productList = result;
+          CategorySchema.find({},function (error, result) {
+              if(error)
+              {
+                //res.send({'result':'error'});
+                console.log("Got error in fetching data from database.");
+              }
+              else
+              {
+                categoryList = result;
+                res.render('adminhome',{session:req.session, user : req.user, categories: categoryList, products: productList});////second
+                res.end("Ending ..");
+              }
+          });
+        }
+      });
+   }
+});*/
+router.get('/categorymgmt', function (req, res, next)
+{
+	if(!req.user || req.user.Role=='user' )
+	{
+		res.statusCode = 302; 
+		res.setHeader("Location", "/login");
+		res.end("Please Login First.");
+	}
+	if(req.user)
+		req.session.userole = req.user.Role;
+	else
+		req.session.userole = '';
+	CategorySchema.find({}, function (error, result){
+		if(error)
+		{
+			console.log(error);
+			console.log("Got some error in fetching category list.");
+		}
+		else
+		{
+			//console.log(result);
+			res.render('viewcategory', {session:req.session, user:req.user, categorylist:result});
+		}
+	});
+});
+
+router.get('/updatecategory', function (req, res, next)
+{
+	CategorySchema.update({_id: req.query.catID}, {CategoryStatus: req.query.newValue}, function (error, result){
+		if(error)
+		{
+			console.log("Not able to update category status.");
+		}
+		else
+		{
+			res.send("success");
+		}
+	});
+});
+
+router.get('/deletecategory', function (req, res, next)
+{
+	console.log(req.query.catID);
+	CategorySchema.remove({_id: req.query.catID}, function (error, result){
+		if(error)
+		{
+			console.log("Not able to remove selected category.");
+		}
+		else
+		{
+			console.log(result);
+			res.send("success");
+		}
+	});
+}); 
+//redirecting to add category view page
+router.get('/addcategory', function (req, res, next){
+	if(req.user)
+		req.session.userole = req.user.Role;
+	else
+		req.session.userole = '';	
+	res.render('addcategory', {session:req.session, user : req.user});
+});
+//action for adding new category into db
+router.post('/insertcategory', function (req, res){
+	var collection = new CategorySchema({
+		CategoryName : req.body.CategoryName,
+		CategoryStatus : req.body.CategoryStatus,		
+		Description : req.body.Description
+	});
+	collection.save(function (err, result){
+		if(err)
+		{
+			console.log("Category can not added.");
+		}
+		else
+		{
+			req.session.sessionFlash = {
+		        type: 'categoryadded',
+		        message: req.body.CategoryName+' added Successfully.'
+		    }
+			res.statusCode = 302; 
+    		res.setHeader("Location", "/categorymgmt");
+    		res.end();
+			//res.re('adminhome');
+		}
+	});
+});
+router.get('/productmgmt', function (req, res, next){
+	if(!req.user || req.user.Role=='user' )
+	{
+		res.statusCode = 302; 
+		res.setHeader("Location", "/login");
+		res.end("Please Login First.");	
+	}
+	if(req.user)
+		req.session.userole = req.user.Role;
+	else
+		req.session.userole = '';
+
+	ProductSchema.find({}, function (error, result){
+		if(error)
+		{
+			console.log(error);
+			console.log("Got some error in fetching category list.");
+		}
+		else
+		{
+			//console.log(result);
+			res.render('viewproducts', {session:req.session, user:req.user, productlist:result});
+		}
+	});
+});
+router.get('/updateproduct', function (req, res, next){
+	if(req.user)
+		req.session.userole = req.user.Role;
+	else
+		req.session.userole = '';
+
+	ProductSchema.find({_id: req.query.prodID}, function (error, result){
+		if(error)
+		{
+			console.log("some error in /updateproduct.");
+		}
+		else
+		{
+			var productdetails = result;
+			CategorySchema.find({},function (error, result){
+				if(error)
+				{
+					console.log("Something went wrong in selecting category in /updateproduct");
+				}
+				else
+				{
+					res.render('updateproduct', { session:req.session, user: req.user, products:productdetails, categories:result });
+				}
+			});
+		}
+	});	
+});
+
+router.post('/updateproductaction',multipartMiddleware, function (req, res, next){
+	fs.readFile(req.files.ProductImage.path, function (err, data) 
+    {
+    	if(req.files.ProductImage.name)
+    	{
+    		imageName = req.files.ProductImage.name+'_'+Math.floor(Math.random()*(100000-1)+21);
+		//console.log("Image name is = "+imageName);/// If there's an error
+			if(!imageName)
+			{
+				console.log("There was an error");
+				res.end("Some error occured in image upload.. Can't read image name.");
+			} 
+			else 
+			{
+			  	newPath = "./public/images/products/"+imageName;
+			  	/// write file to uploads/fullsize folder
+			  	fs.writeFile(newPath, data, function (err) {
+				  	//Deleting main uploaded file.	
+				fs.unlink(req.files.ProductImage.path, function (error){ console.log("File deleted Successfully."); });	
+			  		//UPDATING RECORD WITH IMAGE FIELD
+			  	ProductSchema.update({_id: req.body.productID},
+			  		{
+			  			ProductName: req.body.ProductName,
+						ProductCategory: req.body.ProductCategory,
+						ProductSalePrice: req.body.ProductSalePrice,
+						ProductListPrice: req.body.ProductListPrice,
+						ProductQuantityInStock: req.body.ProductQuantityInStock,
+						ProductLowStockLevel: req.body.ProductLowStockLevel,
+						ProductAvailable: req.body.ProductAvailable,
+						ProductImage: "./images/products/"+imageName,
+						ProductImageLink: req.body.ProductImageLink,
+						ProductImageAltText: req.body.ProductImageAltText,
+						ProductShortDescription: req.body.ProductShortDescription,
+						ProductDetailedDescription: req.body.ProductDetailedDescription	
+			  		}, function (error, result){
+			  			if(error){
+			  				console.log("Not able to update record in /updateproductaction");
+			  			}
+			  			else{
+			  				res.statusCode = 302; 
+				    		res.setHeader("Location", "/productmgmt");
+				    		res.end("Product Successfully Updated");	
+			  			}
+			  	});	
+	    		});
+    		}
+    	}		
+    	else
+    	{
+    		//UPDATING RECORD EXCEPT IMAGE FIELD
+    		ProductSchema.update({_id: req.body.productID},
+		  		{
+		  			ProductName: req.body.ProductName,
+					ProductCategory: req.body.ProductCategory,
+					ProductSalePrice: req.body.ProductSalePrice,
+					ProductListPrice: req.body.ProductListPrice,
+					ProductQuantityInStock: req.body.ProductQuantityInStock,
+					ProductLowStockLevel: req.body.ProductLowStockLevel,
+					ProductAvailable: req.body.ProductAvailable,
+					ProductImageLink: req.body.ProductImageLink,
+					ProductImageAltText: req.body.ProductImageAltText,
+					ProductShortDescription: req.body.ProductShortDescription,
+					ProductDetailedDescription: req.body.ProductDetailedDescription	
+		  		}, function (error, result){
+		  			if(error){
+		  				console.log("Not able to update record in /updateproductaction");
+		  			}
+		  			else{
+		  				res.statusCode = 302; 
+			    		res.setHeader("Location", "/productmgmt");
+			    		res.end("Product Successfully Updated");	
+		  			}
+		  	});
+    	}
+		
+	});
+});
+	
+router.get('/deleteproduct', function (req, res, next)
+{
+	console.log("productId is"+req.query.catID);
+	ProductSchema.remove({_id: req.query.catID}, function (error, result){
+		if(error)
+		{
+			console.log("Not able to remove selected category.");
+		}
+		else
+		{
+			res.send("success");
+		}
+	});
+}); 	
+
+//redirecting to addproduct view page
+router.get('/addnewproduct', function (req, res, next){
+	if(req.user)
+		req.session.userole = req.user.Role;
+	else
+		req.session.userole = '';	
+	CategorySchema.find({},function (error, result){
+		if(error)
+		{
+			console.log("Something went wrong.. Can't show this image.");
+		}
+		else
+		{
+			res.render('addproduct', {session:req.session, user : req.user, categories: result});		
+		}
+	});
+});
+
+router.post('/addproductaction', multipartMiddleware, function (request, res)
+{
+
+    //console.log("Contents are: "+JSON.stringify(request.body));
+    //console.log("Files are: "+JSON.stringify(request.files));
+    //var insertproduct="", newPath="", imageName="";
+    //Changing file name and copying it into another folder    
+
+    fs.readFile(request.files.ProductImage.path, function (err, data) 
+    {
+		imageName = request.files.ProductImage.name+'_'+Math.floor(Math.random()*(100000-1)+21);
+		//console.log("Image name is = "+imageName);/// If there's an error
+		if(!imageName)
+		{
+			console.log("There was an error");
+			res.end("Some error occured in image upload.. Can't read image name.");
+		} 
+		else 
+		{
+		  	newPath = "./public/images/products/"+imageName;
+		  	/// write file to uploads/fullsize folder
+		  	fs.writeFile(newPath, data, function (err) {
+		  		console.log("new path of image is ="+newPath);
+
+			  	//Deleting main uploaded file.	
+			  	fs.unlink(request.files.ProductImage.path, function (error){ console.log("File deleted Successfully."); });	
+		  		var collection = new ProductSchema({
+			    	ProductName: request.body.ProductName,
+					ProductCategory: request.body.ProductCategory,
+					ProductSalePrice: request.body.ProductSalePrice,
+					ProductListPrice: request.body.ProductListPrice,
+					ProductQuantityInStock: request.body.ProductQuantityInStock,
+					ProductLowStockLevel: request.body.ProductLowStockLevel,
+					ProductAvailable: request.body.ProductAvailable,
+					ProductImage: "./images/products/"+imageName,
+					ProductImageLink: request.body.ProductImageLink,
+					ProductImageAltText: request.body.ProductImageAltText,
+					ProductShortDescription: request.body.ProductShortDescription,
+					ProductDetailedDescription: request.body.ProductDetailedDescription
+			    });
+			    collection.save(function (err, result){
+			    	if(err)
+			    	{
+			    		console.log("Something went wrong. We cant add this item in our database.");
+			    		res.end("Something went wrong. We cant add this item in our database.");
+			    	}
+			    	else
+			    	{
+			    		request.session.sessionFlash = {
+					        type: 'productadded',
+					        message: request.body.ProductName+' added Successfully.'
+					    }
+			    		res.statusCode = 302; 
+			    		res.setHeader("Location", "/productmgmt");
+			    		res.end("Product Successfully Updated");	
+			    	}
+			    });
+			});
+		}
+	});
+    //inserting into dbvar collection = new CategorySchema({
+});
+
+router.get('/AboutUsPage', function (req, res, next){
+	if(req.user)
+		req.session.userole = req.user.Role;
+	else
+		req.session.userole = '';	
+	res.render('aboutus.ejs', {session:req.session, user : req.user});
+});
+router.get('/ServicePage', function (req, res, next){
+    if(req.user)
+		req.session.userole = req.user.Role;
+	else
+		req.session.userole = '';	
+	res.render('service.ejs', {session:req.session, user : req.user});
+});
+router.get('/ContactPage', function (req, res, next){
+    if(req.user)
+		req.session.userole = req.user.Role;
+	else
+		req.session.userole = '';	
+	res.render('contact.ejs', {session:req.session, user : req.user});
+});
+
+router.post('/Contactusmail', function (req, res, next){
+	var mailOpts, smtpTrans;
+	smtpTrans = nodemailer.createTransport('SMTP', {
+		service: 'Gmail',
+		auth: {
+			user: "amardeep.chauhan@laitkor.com",
+			pass: "eaekkxcmlosxwuyn"
+			} 
+	});	
+	mailOpts = {
+		from: req.body.username + ' &lt;' + req.body.useremail + '&gt;', //grab form data from the request body object	
+		to: 'amardeep.chauhan@laitkor.com',
+		subject: 'Website contact us form',
+		text: req.body.message
+		};
+
+	smtpTrans.sendMail(mailOpts, function (error, response) {
+		if(error)
+		{
+			res.render('contact', { msg: 'Error occured, message not sent.', err: true});	
+		}
+		else
+		{
+			res.render('contact', {msg: 'Message sent! Thank you.', err: false});
+		}
+	});		
+});
+
+router.get('/addtocart', function (req, res, next){
+
+	console.log("request body values"+JSON.stringify(req.body));
+	console.log("request query values"+JSON.stringify(req.query));
+	//for now redirect to home page after that redirect him to the page where he came from 
+	console.log("user id is = "+req.user);
+	//cartSchema
+	if(req.user){
+		var collection = new cartSchema({
+	    	productID: req.query.productID,
+			UserID: req.user._id,  
+			quantity: 1,
+			productPrice: req.query.productamount,
+			paymentStatus: 'pending'	
+	    });
+	    collection.save(function (err, result){
+	    	if(err)
+	    	{
+	    		console.log(err);
+	    		console.log("Something went wrong. We cant add this cart details in our database. action=/addtocart");
+	    		res.end("Something went wrong. We cant add this item in our database.");
+	    	}
+	    	else
+	    	{
+	    		console.log("new cart item is added successfully.");
+	    		res.statusCode = 302; 
+	    		res.setHeader("Location", "/");
+	    		res.end("Product Successfully Updated");	
+	    	}
+	    });
+	}
+	else
+	{
+		res.statusCode = 302; 
+		res.setHeader("Location", "/login");
+		res.end("Please Login First.");	
+	}
+
+
+
+});
+
+router.get('/productcartdetails', function (req, res, next){
+	if(req.user)
+		req.session.userole = req.user.Role;
+	else
+		req.session.userole = '';
+
+	if(req.user)
+	{
+		cartSchema.find({UserID: req.user._id, paymentStatus:'pending'}, function (error, result){
+			if(error)
+			{
+				console.log("Not getting cart items.");
+				console.log(error);
+			}
+			else
+			{
+				//console.log("Cart items are "+result);
+				var ProductIDS = [], ProductNAMES = [], ProductimgURL = [], ProductPRICE = [], ProductSHORTDESC = [];
+				var limit = result.length;
+				var counter = 0; 
+				for( var i=0; i<result.length; i++)
+				{
+					ProductSchema.find({_id: result[i].productID}, function (err, result){
+
+						console.log("*1*LENGTH OF RESULT IS ="+result[0].length+"**");
+						if(!result[0].length) 
+							{console.log("*3*LENGTH OF RESULT IS ="+result[0].length+"**");
+						        res.render('cartdetailpage', {session:req.session, user: req.user, cartempty: 'true'});
+						}
+
+						if(err)
+						{
+							console.log("Got error in fetching record for"+result[i].productID);
+							console.log(error);
+						}
+						else
+						{
+							//console.log("*2*LENGTH OF RESULT IS ="+result[0].length+"**");
+							
+							ProductIDS[counter] = result[0]._id;
+							ProductNAMES[counter] = result[0].ProductName;
+							ProductimgURL[counter] = result[0].ProductImage;
+							ProductPRICE[counter] = result[0].ProductSalePrice;
+							ProductSHORTDESC[counter] = result[0].ProductShortDescription;
+							
+							/*console.log("Product id: "+ProductIDS[counter]);
+							console.log("Product name: "+ProductNAMES[counter]);
+							console.log("Product image: "+ProductimgURL[counter]);
+							console.log("Product price: "+ProductPRICE[counter]);
+							console.log("Product shortdescriotion: "+ProductSHORTDESC[counter]);*/
+							counter = counter+1;	
+							//console.log("product ids are:::::::::::"+productDetails[counter]._id);
+							console.log("++++++result is+++++++"+result+"++++++.++++++");
+							if(counter==limit)
+							{
+								//console.log("productDetails are ::::"+productDetails+"::::");
+								
+								res.render('cartdetailpage', {session:req.session, user: req.user, productid: ProductIDS, productnames: ProductNAMES, productimgurl: ProductimgURL, productprice: ProductPRICE, productshordesc: ProductSHORTDESC, cartempty: 'false'});
+								//Send response to cart details page.. 
+							}
+
+						}
+					});
+					
+				}
+			}	
+		});
+	}
+	else
+	{
+		res.statusCode = 302; 
+		res.setHeader("Location", "/login");
+		res.end("Please Login First.");	
+	}
+	
+});
+
+router.get('/DeleteCartProduct', function (req, res){
+	//res.send("success");
+	cartSchema.remove({productID: req.query.cartproductid}, function (error, result){
+		if(error)
+		{
+			console.log("+++++ Some Error Occured in /DeleteCartProduct +++++");
+			res.send("failure");
+		}
+		else
+		{
+			console.log("+++++ Cart product deleted +++++");
+			res.send("success");
+		}
+	});
+});
+
+router.get('/paypalthank', function (req, res, next){
+	if(req.user)
+		req.session.userole = req.user.Role;
+	else
+		req.session.userole = '';
+	
+	cartSchema.remove({UserID: req.user._id}, function (error, result){
+		if(error){
+			console.log("Got some error in /paypalthank");
+			console.log(error);
+		}
+		else{
+			console.log("Successfully cart emptied for user.");
+			res.render('paypalthankpage', {session:req.session, user : req.user});
+		}
+	});		
+});
+
+router.get('/RateProduct', function (req, res, next){
+	console.log("====================");
+	//console.log(req.query.CartProductID);
+//productRating,CartProductID:,ProductRating:,ProductSchema
+
+	ProductSchema.find({_id: req.query.CartProductID}, function (error, result){
+		if(!result)
+		{
+			console.log("========="+"EMPTY RESULT"+"=========");
+			res.send("Product not found in product table.");	
+		}
+		//console.log("working 2");
+		if(error)
+		{
+			console.log("+++error+++");
+			console.log("error:->"+error+"::");
+			res.send("Failed in finding product in product table.");	
+		}
+		if(result)
+		{  	var pro_name = result[0].ProductName
+			console.log("product table========="+result+"=========");
+			ProductRatingSchema.find({ProductId: req.query.CartProductID}, function (eror, result2){
+				console.log("result 2 value is : "+result2);
+				if(eror)
+				{
+					console.log("+++error+++");
+					console.log("error:->"+eror+"::");
+					res.send("Error: failed in finding product in db");	
+				}
+				if(!result2)
+				{
+					console.log("========= No record found in productrating table ====Inserting::=====");
+					
+					var collection = new ProductRatingSchema({
+						ProductId: req.query.CartProductID,
+						ProductName: pro_name, 
+						AvgRating: req.query.ProductRating, 
+						NumOfVoters: 1
+					});
+					collection.save(function (error, result3){
+						if(error)
+						{
+							console.log("---- Error: in fetching storing rating in db ----");
+							res.send("Error: filed in finding product in db");
+						}
+						else
+						{
+							console.log("Product Rating saved successfully");
+							res.send("success1");
+						}
+					});
+				}
+				if(result2)
+				{
+					var previousRating = result2[0].AvgRating;
+					var totalrating = (req.query.ProductRating+result2[0].AvgRating*result2[0].NumOfVoters)/(result2[0].NumOfVoters+1);
+					var newNumberOfVoters = result2[0].NumOfVoters+1
+					console.log("Product previous rating was = "+previousRating);
+					console.log("Rating after calculation is = "+totalrating);
+					ProductRatingSchema.update({ProductId: req.query.CartProductID},
+						{
+							AvgRating: totalrating, 
+							NumOfVoters: newNumberOfVoters
+						}, function (err, result4){
+							if(err)
+							{
+								console.log("Getting error while updating product rating.");
+								console.log(err);
+								res.send("Error: failed to update product rating.")
+							}
+							else
+							{
+								console.log("Product rating updated successfully.")
+								res.send('success2');
+							}
+					});
+				}	
+			});
+		}	
+	});	
+});
+//action for adding new product into db
+
+router.get('/register', function(req, res) {
+	if(req.user)
+		req.session.userole = req.user.Role;
+	else
+		req.session.userole = '';	
+    res.render('register', {session:req.session, user : req.user});
+});
+
+router.post('/register', function(req, res)
+{
+	console.log(req.body);
+	var Name = req.body.firstname+' '+req.body.lastname;
+    Account.register(new Account({username : req.body.username}), req.body.password, function(err, account) {
+	    if(err)
+	    {
+	    	console.log(err);
+	        return res.render('register', { account : account });
+	    }
+	    else
+	    {
+	    	Account.update({username: req.body.username},
+	    	{
+		        Name: Name,
+		        Email: req.body.email,
+		        Password: req.body.password,
+		        Role: 'user', //Role: 'admin',
+		        P_no: req.body.mobile
+	    	},
+	    	function (error, result)
+    		{
+    			if(error)
+    			{
+    				console.log("Registered but cant update.");
+    			}
+    			else
+    			{
+    				passport.authenticate('local')(req, res, function () {
+			    	 console.log("Successfully Inserted");
+			        res.redirect('/');	
+    				});
+    			}		
+	    	});
+	    }	
+	});
+});  
+
+router.get('/login', function(req, res) {
+	if(req.user)
+		req.session.userole = req.user.Role;
+	else
+		req.session.userole = '';	
+	if(req.query.redirected==1)
+	{
+		var textmsg = "Please Login First";
+	    res.render('login', { user : req.user, alrtmessage: textmsg, session: req.session});
+	}
+	else
+	{
+		console.log("here..");
+		res.render('login', { user : req.user, session: req.session });		
+	}
+});
+
+
+router.get('/ValidateUser', function (req, res){
+	//res.send(req.body.username);
+	console.log(req.query.username);
+	console.log(req.query.password);
+	var user = req.query.username;
+	var pass = req.query.password;
+	Account.findOne({'username': user , 'Password': pass }, function (error, result) 
+	{
+        if(error)
+        {
+            console.log("Failed");
+        }
+        else
+        {
+	          if(result==null)
+	          {
+	          	  res.send("Username/Password Incorrect.");
+	          }
+	          else
+	          {
+	          	  res.send("success");
+	          }
+        }
+    });
+});
+
+
+router.post('/login', passport.authenticate('local'), function(req, res) {
+    //console.log("Username is "+req.body.username);
+	//req.session.username = req.body.username;	
+	//console.log(req.session+"  SESSION IS WORKING FINE.");
+
+	Account.find({username: req.body.username}, function (error, results)
+	{
+		if(error)
+		{
+			console.log("Cant find record in database.");
+		}
+		else
+		{
+			req.session.sessionFlash = {
+		        type: 'loginsuccess',
+		        message: 'Welcome '+req.user.username
+		    }
+			res.redirect('/');
+		}
+	});
+});
+
+
+
+router.get('/logout', function(req, res) {
+	req.session.userole='';
+    req.logout();
+    res.redirect('/');
+});
+
+router.get('/ping', function(req, res){
+    res.status(200).send("pong!");
+});
+
+/*router.get('/', function(req, res, next) {
+  res.render('index', { title: 'Express' });
+});*/
+
+//router.get('/useregister', userscontroller.register, function(req, res){});
+
+module.exports = router;

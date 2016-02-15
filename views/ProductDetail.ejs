@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Shopping cart</title>
+	<link rel="stylesheet" href="css/css_newtheme/style.css" type="text/css" media="all" />
+    <script src="js/js_newtheme/jquery-1.4.1.min.js" type="text/javascript"></script>
+    <script src="js/js_newtheme/jquery.jcarousel.pack.js" type="text/javascript"></script>
+    <script src="js/js_newtheme/jquery.slide.js" type="text/javascript"></script>
+    <script src="js/js_newtheme/jquery-func.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="css/RatingStyle.css" />
+	
+
+		<style type="text/css">
+.items ul li {
+  	height:350px;
+  }
+.button {
+	font-family: 'Droid Sans', sans-serif;
+	-webkit-border-radius: 25px;
+	-moz-border-radius: 25px;
+	border-radius: 25px;
+	margin: 15px;
+	border: 1px solid rgba(0,0,0,0.4) ;
+	box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.5),
+				0 0 1px 1px rgba(255,255,255,0.8),
+				0 0 0 6px rgba(0,0,0,0.06),
+				0 0 0 3px rgba(0,0,0,0.1);
+	cursor: pointer;
+}
+.title {
+	padding: 10px;
+	float: left;
+	color: #fff;
+	font-weight: 800;
+	font-size: 20px;
+	text-shadow: 1px 1px rgba(0,0,0,0.2);
+	text-transform: uppercase;
+	/*border-right: 1px solid rgba(255,255,255,0.3);*/
+}
+.price {
+	padding: 10px;
+	float: left;
+	color: rgba(0,0,0,0.4);
+	font-weight: 800;
+	font-size: 20px;
+	text-shadow: 1px 1px rgba(255,255,255,0.3);
+	text-transform: uppercase;	
+	border-left: 1px solid rgba(0,0,0,0.2);
+}
+
+/* colors */
+.yellow {
+	background: rgb(255,214,94);
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZDY1ZSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmZWJmMDQiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  rgba(255,214,94,1) 0%, rgba(254,191,4,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,214,94,1)), color-stop(100%,rgba(254,191,4,1)));
+	background: -webkit-linear-gradient(top,  rgba(255,214,94,1) 0%,rgba(254,191,4,1) 100%);
+	background: -o-linear-gradient(top,  rgba(255,214,94,1) 0%,rgba(254,191,4,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(255,214,94,1) 0%,rgba(254,191,4,1) 100%);
+	background: linear-gradient(top,  rgba(255,214,94,1) 0%,rgba(254,191,4,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffd65e', endColorstr='#febf04',GradientType=0 );
+}
+
+.yellow:hover {
+	background: rgb(254,191,4);
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZlYmYwNCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmZmQ2NWUiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  rgba(254,191,4,1) 0%, rgba(255,214,94,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(254,191,4,1)), color-stop(100%,rgba(255,214,94,1)));
+	background: -webkit-linear-gradient(top,  rgba(254,191,4,1) 0%,rgba(255,214,94,1) 100%);
+	background: -o-linear-gradient(top,  rgba(254,191,4,1) 0%,rgba(255,214,94,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(254,191,4,1) 0%,rgba(255,214,94,1) 100%);
+	background: linear-gradient(top,  rgba(254,191,4,1) 0%,rgba(255,214,94,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#febf04', endColorstr='#ffd65e',GradientType=0 );
+}
+
+.green {
+	background: rgb(143,200,0);
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzhmYzgwMCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM2NjhlMDAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  rgba(143,200,0,1) 0%, rgba(102,142,0,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(143,200,0,1)), color-stop(100%,rgba(102,142,0,1)));
+	background: -webkit-linear-gradient(top,  rgba(143,200,0,1) 0%,rgba(102,142,0,1) 100%);
+	background: -o-linear-gradient(top,  rgba(143,200,0,1) 0%,rgba(102,142,0,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(143,200,0,1) 0%,rgba(102,142,0,1) 100%);
+	background: linear-gradient(top,  rgba(143,200,0,1) 0%,rgba(102,142,0,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#8fc800', endColorstr='#668e00',GradientType=0 );
+}
+.green:hover {
+	background: rgb(102,142,0);
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzY2OGUwMCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM4ZmM4MDAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  rgba(102,142,0,1) 0%, rgba(143,200,0,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(102,142,0,1)), color-stop(100%,rgba(143,200,0,1)));
+	background: -webkit-linear-gradient(top,  rgba(102,142,0,1) 0%,rgba(143,200,0,1) 100%);
+	background: -o-linear-gradient(top,  rgba(102,142,0,1) 0%,rgba(143,200,0,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(102,142,0,1) 0%,rgba(143,200,0,1) 100%);
+	background: linear-gradient(top,  rgba(102,142,0,1) 0%,rgba(143,200,0,1) 100%);
+/*	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#668e00', endColorstr='#8fc800',GradientType=0 ); */
+}
+
+
+	</style>
+</head>
+<body>
+	<!-- Top -->
+      <div id="top" style="height:80px">
+          <div class="shell">
+              <!-- Call Header -->
+              <% include header %>
+              <!-- End Header -->
+              <!-- Slider -->
+
+              <!-- End Slider -->
+          </div>
+      </div>
+  <!-- Top -->
+  <div id="main">
+	<div class="shell">
+		<!-- call optionsNAV(second white navigation) -->
+		<% if(user)
+		{	
+			var totalcartamount=0;
+			for(var flg=0; flg<cartdetails.length; flg++)
+			{
+				var totalcartamount=totalcartamount+cartdetails[flg].productPrice;
+			}
+		}
+		%>
+			<div class="options">
+				<div class="search">
+					<form action="" method="post">
+						<span class="field"><input type="text" class="blink" value="SEARCH" title="SEARCH" /></span>
+						<input type="text" class="search-submit" value="GO" />
+					</form>
+				</div>
+				<span class="left"><a href="#">Advanced Search</a></span>
+				
+				<div class="right">
+					<span class="cart">
+						<a href="/productcartdetails" class="cart-ico">&nbsp;</a>
+						<% if(user){ %>
+							<strong><%= totalcartamount %>&nbsp;&#x20b9;</strong>
+						<% }else{ %>
+							<strong>0&nbsp;&#x20b9;</strong>
+						<% } %>
+						
+					</span>
+					<span class="left more-links">
+						<!--<a href="#">Checkout</a>-->
+						<a href="/productcartdetails">Details</a>
+					</span>
+				</div>
+			</div>
+	<div class="tabbed">
+  		<div class="tab-content" style="display: block;">  
+
+  			<div class="subpages" style="position:static; min-height:1000px; width:100%;">
+				<table>
+					<tr>
+						<td style="width:60%"><div class="productimage" style="position:static; width:100%; height:500px; ">
+				    		<img src="<%= products[0].ProductImage %>" alt="<%= products[0].ProductImageAltText %>" height="100%" width="100%" />	
+				    	</div></td>
+				    	<td style="width:40%">
+					    	<div class="productpricedetails" style="width:90%; padding-left:20px; padding-top:30px; padding-right:20px; height:500px; border-left: thin solid silver;">	
+				    		<span style="padding: 25px 25px 25px 25px; margin-left:20px;">
+				    			<span style="font-size: 16px; line-height:20px; color: #000000; font-family: sans-serif; font-weight:bold"><%= products[0].ProductName %></span>
+				    			<h4 style="margin-top: 10px; margin-bottom:30px; word-wrap: break-word;  font-family: 'Dosis', sans-serif; color: grey;"><%= products[0].ProductShortDescription %></h4>
+				    			<table>
+				    				<tr>
+				    					<td><span style="font-size: 16px; font-family: Arial, Helvetica, sans-serif; font-weight: bold; color:green">List Price: <%= products[0].ProductListPrice %>&nbsp;&#x20b9;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="margin-left:50px;">
+				    			<% if(products[0].ProductAvgRating==0){ %>
+									<img align="right" src="images/0star.png" style="" id="Star0" height="30px" width="140px">
+								<% } %>
+								<% if(products[0].ProductAvgRating==1){ %>
+									<img align="right" src="images/0star.png" style="" id="Star1" height="30px" width="140px">
+								<% } %>
+								<% if(products[0].ProductAvgRating==2){ %>
+									<img align="right" src="images/2star.png" style="" id="Star2" height="30px" width="140px">
+								<% } %>
+								<% if(products[0].ProductAvgRating==3){ %>
+									<img align="right" src="images/3star.png" style="" id="Star3" height="30px" width="140px">
+								<% } %>
+								<% if(products[0].ProductAvgRating==4){ %>
+									<img align="right" src="images/4star.png" style="" id="Star4" height="30px" width="140px">
+								<% } %>
+								<% if(products[0].ProductAvgRating==5){ %>
+									<img align="right" src="images/5star.png" style="" id="Star5" height="30px" width="140px">
+								<% } %>
+								</span><br><br />
+				    			<span style="font-size: 16px; font-family: Arial, Helvetica, sans-serif; font-weight: bold; color:#890000">Offer Price: <%= products[0].ProductSalePrice %>&nbsp;&#x20b9;</span><br />	</td>
+				    			<td></td>
+				    				</tr>
+				    			</table>
+				    			<link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+				    			<a href="/addtocart?productID=<%= products[0]._id %>&productamount=<%= products[0].ProductSalePrice %>">
+								<button class="button green">
+									<div class="title">Add to cart</div>
+									<div class="price"><%= products[0].ProductSalePrice %>&nbsp;&#x20b9;</div>
+								</button>
+								</a>	
+				    			<h3 style="margin-top:10px;">Description</h3>
+								<p style="font-size:15px; padding-top:15px; line-height: 1.5;"><%= products[0].ProductDetailedDescription %></p>
+				    		</span>
+				    		</div>
+			    		</td>
+					</tr>
+				</table>
+				 
+					<div class="ProductReview" style="padding-top:20px; width:100%;margin-top: 50px;">
+					<div style="margin-top:30px; margin-left:15%; width:70%; border-top:6px solid silver; border-bottom: 6px solid silver">
+				    	<div style="width:100%; border-bottom:6px solid silver"><h2 style="padding-top:10px; padding-bottom:10px; padding-left:5px">User Reviews</h2></div>
+				    	
+				    	<br><h4><span id="ratingmessage"></span></h4>
+				    	<% if(user) { %>  	
+				    	<div id="giveReview">
+							<font style="display:block; font-size:14px; font-weight:bold; color:grey; margin-left:5px ">Rate Product:</font> 
+							<span id="ratingsForm" class="strating">
+							<div class="stars strating">
+							<input type="radio" name="star" class="star-1 strating" id="star-1" />
+							<label class="star-1" for="star-1 strating" id="1" onclick="setproductrating(this.id)" >1</label>
+							<input type="radio" name="star" class="star-2 strating" id="star-2" />
+							<label class="star-2 strating" for="star-2" id="2" onclick="setproductrating(this.id)">2</label>
+							<input type="radio" name="star" class="star-3 strating" id="star-3" />
+							<label class="star-3 strating" for="star-3" id="3" onclick="setproductrating(this.id)">3</label>
+							<input type="radio" name="star" class="star-4 strating" id="star-4" />
+							<label class="star-4 strating" for="star-4" id="4" onclick="setproductrating(this.id)">4</label>
+							<input type="radio" name="star" class="star-5 strating" id="star-5" />
+							<label class="star-5 strating" for="star-5" id="5" onclick="setproductrating(this.id)">5</label>
+							<span></span>
+							</div>  
+							</span>	<br/>
+							<input type="hidden" name="prodNAME" id="prodNAME" value="<%= products[0].ProductName %>" >
+							<input type="hidden" name="productrating" id="productrating" >
+							<input type="hidden" name="productkid" id="productkid" value="<%= products[0]._id %>">
+							<font style="font-size:14px; font-weight:bold; color:grey; margin-left:5px">Enter your review here:</font><br/>
+							<textarea cols="98%" rows="6" id="usercomment"></textarea>
+							<button class="button green" id="reviewbutton" onclick="userreview()">
+								<div class="title">Submit</div>
+							</button>
+						</div>
+						<% } %>
+							<% for(kl=0; kl<usereviews.length; kl++){ %>
+								<div style="border-top:4px solid silver; margin-top:25px;">
+									<div class="reviewheader">
+										<h3><span align="right" style="margin-left:0px;; color:black"><%= usereviews[kl].userNAME %></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="margin-right:0px;"><%= usereviews[kl].date %></span></h3>
+										<span style="margin-top:10px;">
+											<% if(usereviews[kl].userRating==1){ %>
+												<img src="images/1star.png" style="margin-top:8px" id="Star1" height="20px" width="100px">
+											<% } %>
+											<% if(usereviews[kl].userRating==2){ %>
+												<img src="images/2star.png" style="margin-top:8px" id="Star2" height="20px" width="100px">
+											<% } %>
+											<% if(usereviews[kl].userRating==3){ %>
+												<img src="images/3star.png" style="margin-top:8px" id="Star3" height="20px" width="100px">
+											<% } %>
+											<% if(usereviews[kl].userRating==4){ %>
+												<img src="images/4star.png" style="margin-top:8px" id="Star4" height="20px" width="100px">
+											<% } %>
+											<% if(usereviews[kl].userRating==5){ %>
+												<img src="images/5star.png" style="margin-top:8px" id="Star5" height="20px" width="100px">
+											<% } %>
+										</span>
+									</div>
+									<div class="reviewbody">
+										<p style="font-size:15px; margin-top:7px; line-height: 1.5;"><%= usereviews[kl].userCOMMENT %></p>
+									</div>
+								</div>
+							<% } %>	
+						
+					</div>
+					</div>
+			</div>
+  		</div>
+  	</div>
+  </div>	
+</div> 	
+  	<div id="container" style="padding-top:30px;">
+        <div class="brands">
+            <h3>Brands</h3>
+            <div class="logos">
+                <a href="#"><img src="css/css_newtheme/images/logo1.gif" alt="" /></a>
+                <a href="#"><img src="css/css_newtheme/images/logo2.gif" alt="" /></a>
+                <a href="#"><img src="css/css_newtheme/images/logo3.gif" alt="" /></a>
+                <a href="#"><img src="css/css_newtheme/images/logo4.gif" alt="" /></a>
+                <a href="#"><img src="css/css_newtheme/images/logo5.gif" alt="" /></a>
+            </div>
+        </div>
+        <!--Call Footer -->
+        <% include footer %>                
+        <!-- End Footer -->
+    </div>
+    
+    <script type="text/javascript">
+
+    	function setproductrating(ProdRating){
+			//console.log("User Rating is = "+ ProdRating); 
+			document.getElementById('productrating').value = ProdRating;
+    	}
+    	function userreview(someflag){ 
+			/*console.log("Product Id value is = "+ $('#productkid').val());	
+			console.log("User comment value is ="+ $('#usercomment').val());
+			console.log("Product rating value is = "+ $('#productrating').val());*/
+			if($('#usercomment').val()=='' || $('#productrating').val()==''){
+				$('#ratingmessage').css('color','red');
+				$('#ratingmessage').html("Please rate product and write review.");
+			}
+			else{
+				var params = {
+							productID: $('#productkid').val(),
+							productNAME: $('#prodNAME').val(),
+							ProductRating: $('#productrating').val(),
+						  	UserComment: $('#usercomment').val()
+					   	 };
+				$.ajax({
+			        url: 'http://localhost:3000/saveProductReview',
+			        dataType: "text",
+			        data: params,
+			        success: function(data) 
+			        {	
+			        	if(data=='success'){
+			        		console.log("product review rated successfully.");
+			        		$('#ratingmessage').css('color','green');
+			        		$('#ratingmessage').html("Your review saved successfully!!");
+			        		$('#giveReview').css('display','none');
+			        	}
+			        	else if(data=='LoginFirst')
+			        	{
+			        		window.location.href = "/productcartdetails";
+			        	}
+			        	else{
+			            	console.log(data);
+
+			        	}    
+			        },	
+			        error: function(jqXHR, textStatus, errorThrown) 
+			        {
+			            console.log('error ' + textStatus + " " + errorThrown);
+			        }
+		    	});
+			}
+		}
+    </script>	
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

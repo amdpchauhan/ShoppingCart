@@ -1,0 +1,245 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd"
+    >
+<html lang="en">
+<head>
+    <title>Shopping Cart</title>
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" href="css/css_newtheme/style.css" type="text/css" media="all" />
+    <script src="js/js_newtheme/jquery-1.4.1.min.js" type="text/javascript"></script>
+    <script src="js/js_newtheme/jquery.jcarousel.pack.js" type="text/javascript"></script>
+    <script src="js/js_newtheme/jquery.slide.js" type="text/javascript"></script>
+    <script src="js/js_newtheme/jquery-func.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  function validateform()
+  {
+        var flag=0;
+        if($('#CategoryName').val()=="")
+        {
+          $('#CategoryName').css('border', '2px solid red');
+          flag = 1;
+        }
+        else
+        {
+          $('#CategoryName').css('border', '2px solid green');  
+        }
+
+        if($('#CategoryStatus').val()=="")
+        {
+          $('#CategoryStatus').css('border', '2px solid red');
+          flag = 1;
+        }
+        else
+        {
+          $('#CategoryStatus').css('border', '2px solid green');
+        }
+
+        if($('#Description').val()=="")
+        {
+          $('#Description').css('border', '2px solid red');
+          flag = 1;
+        }
+        else
+        {
+          $('#Description').css('border', '2px solid green');
+        }
+
+        if(flag==1)
+        {
+            return false;
+        }
+  }
+  </script>
+</head>
+<style type="text/css">
+    body
+    {
+        background:url(images/bgnoise_lg.png);
+    }
+    table{
+    	background-color: silver;
+    }
+    table th{
+    	font-size: 18px;
+    	padding: 10px 10px 10px 10px;
+    	border:0px solid white;
+    }
+    td
+    {
+    	padding: 5px 5px 5px 5px;
+    	font-size: 14px;
+    	font-weight: bold;
+    }
+
+</style>
+<script type="text/javascript">
+	function ChangeCategoryStatus(catID)
+	{
+		var valueis=$('#'+catID).val();
+		var parms = {catID: catID,
+					newValue: valueis};
+		$.ajax({
+	        url: 'http://localhost:3000/updatecategory',
+	        dataType: "text",
+	        data: parms,
+	        success: function(data) 
+	        {	if(data='success'){
+	        		console.log("Category updated successfully.");
+	        		window.location.href = "/categorymgmt";
+	        	}
+	        	else{
+	            	console.log("Cant update this category.");
+	        	}
+	        },
+	        error: function(jqXHR, textStatus, errorThrown) 
+	        {
+	            console.log('error ' + textStatus + " " + errorThrown);
+	        }
+    	});
+	}
+
+	function deleteCategory(catID)
+	{
+		var parms = { catID: catID };
+		$.ajax({
+	        url: 'http://localhost:3000/deletecategory',
+	        dataType: "text",
+	        data: parms,
+	        success: function(data) 
+	        {	
+	        	if(data='success'){
+	        		console.log("Category deleted successfully.");
+	        		window.location.href = "/categorymgmt";
+	        	}
+	        	else{
+	            	console.log("Cant delete this category.");
+	        	}    
+	        },
+	        error: function(jqXHR, textStatus, errorThrown) 
+	        {
+	            console.log('error ' + textStatus + " " + errorThrown);
+	        }
+    	});
+	}
+</script>
+<body>
+<!-- Top -->
+    <div id="top" style="height:80px">
+        <div class="shell">
+            <!-- Call Header -->
+            <% include header %>
+            <!-- End Header -->
+            <!-- Slider -->
+
+            <!-- End Slider -->
+        </div>
+    </div>
+<!-- Top -->
+<!--add your content-->
+<div id="main">
+    <div class="shell">
+        <!-- call optionsNAV(second white navigation) -->
+        <% if(user)
+        {   var totalcartamount=0;
+            //console.log("cartdetails are :::::::: "+cartdetails+"::::::");
+            for(var flg=0; flg<cartdetails.length; flg++)
+            {
+                var totalcartamount=totalcartamount+cartdetails[flg].productPrice;
+            }
+        }
+        %>
+            <div class="options">
+                <!--<div class="search">
+                    <form action="" method="post">
+                        <span class="field"><input type="text" class="blink" value="SEARCH" title="SEARCH" /></span>
+                        <input type="text" class="search-submit" value="GO" />
+                    </form>
+                </div>
+                <span class="left"><a href="#">Advanced Search</a></span>
+                -->
+                <div class="right">
+                    <span class="cart">
+                        <a href="/productcartdetails" class="cart-ico">&nbsp;</a>
+                        <% if(user){ %>
+                            <strong><%= totalcartamount %>&nbsp;&#x20b9;</strong>
+                        <% }else{ %>
+                            <strong>0&nbsp;&#x20b9;</strong>
+                        <% } %>
+                        
+                    </span>
+                    <span class="left more-links">
+                        <!--<a href="#">Checkout</a>-->
+                        <a href="/productcartdetails">Details</a>
+                    </span>
+                </div>
+            </div>
+
+        <br />
+            <center><h1>Categories</h1></center>
+        <br />    
+        <hr/>
+        <!-- end optionsNAV -->
+        <div class="tabbed">
+            <div class="tab-content" style="display: block; padding-top:50px; padding-bottom:50px">
+              <!--<header style="padding-bottom:20px">
+                  <center><h2 style="font-size: 28px; font-weight:bold; font-style: italic;
+                  color: black; text-shadow: 0px 1px 1px rgba(255,255,255,0.8);">Category Details::</h2></center> 
+              </header>-->
+              <center><table border="2" align="center"> <!-- cellspacing='0' is important, must stay -->
+        		<tr> 
+        			<th>S.No</th>
+        			<th>Category Name</th>
+        			<th>Category Status</th>
+        			<th>Description</th>
+        			<th>Action</th>
+        		</tr><!-- Table Header -->
+        	    <% for(var i=0; i<categorylist.length; i++) { %>
+        	    	<tr>
+        	    		<td><%= i+1 %></td>
+        				<td><%= categorylist[i].CategoryName %></td>
+        				<td><select name="categorystatus" id="<%= categorylist[i]._id %>" onchange="ChangeCategoryStatus(this.id)">
+        						<% if(categorylist[i].CategoryStatus=='Online') { %>
+        							<option value="Online" selected="true">Online</option>
+        							<option value="Offline">Offline</option>	
+        						<% } if(categorylist[i].CategoryStatus=='Offline') { %>
+        							<option value="Online">Online</option>
+        							<option value="Offline" selected="true">Offline</option>
+        						<% } %>
+        					</select>
+        				<td><%= categorylist[i].Description %></td>
+        				<td><img src="images/deleteicon.png" id="<%= categorylist[i]._id %>" height="20px" width="20px" style="cursor:pointer" onclick="deleteCategory(this.id)" /></td>
+        			</tr>
+        	    <% } %>
+        	    	<tr>
+        	    		<td colspan="5" style="font-size:16px; font-weight:bold; text-align:center "><img src="images/adds-add-file-icon.png" height="20px" width="20px" style="cursor:pointer"/><a href="/addcategory">&nbsp;&nbsp;&nbsp;Add New Category</a></td>
+        	    	</tr>
+        	  </table></center>
+            </div>    
+        </div>
+    </div>
+</div> 
+
+    <div id="container" style="margin-bottom:0px;">
+        <div class="brands">
+            <h3>Brands</h3>
+            <div class="logos">
+                <a href="#"><img src="css/css_newtheme/images/logo1.gif" alt="" /></a>
+                <a href="#"><img src="css/css_newtheme/images/logo2.gif" alt="" /></a>
+                <a href="#"><img src="css/css_newtheme/images/logo3.gif" alt="" /></a>
+                <a href="#"><img src="css/css_newtheme/images/logo4.gif" alt="" /></a>
+                <a href="#"><img src="css/css_newtheme/images/logo5.gif" alt="" /></a>
+            </div>
+        </div>
+        <!--Call Footer -->
+        <% include footer %>                
+        <!-- End Footer -->
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+

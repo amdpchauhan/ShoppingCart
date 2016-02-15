@@ -1,0 +1,426 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<title>Shopping Cart</title>
+	<link rel="stylesheet" href="css/css_newtheme/style.css" type="text/css" media="all" /> 
+	<link rel="stylesheet" href="css/RatingStyle.css" />
+
+	<!--[if lte IE 6]>
+		<style type="text/css" media="screen">
+			.tabbed { height:420px; }
+		</style>
+	<![endif]-->
+	<script src="js/js_newtheme/jquery-1.4.1.min.js" type="text/javascript"></script>
+	<script src="js/js_newtheme/jquery.jcarousel.pack.js" type="text/javascript"></script>
+	<script src="js/js_newtheme/jquery.slide.js" type="text/javascript"></script>
+	<script src="js/js_newtheme/jquery-func.js" type="text/javascript"></script>
+	<style type="text/css">
+		.items ul li {
+		  	height:350px;
+		  }
+		   
+
+.button {
+	font-family: 'Droid Sans', sans-serif;
+	-webkit-border-radius: 25px;
+	-moz-border-radius: 25px;
+	border-radius: 25px;
+	margin: 15px;
+	border: 1px solid rgba(0,0,0,0.4) ;
+	box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.5),
+				0 0 1px 1px rgba(255,255,255,0.8),
+				0 0 0 6px rgba(0,0,0,0.06),
+				0 0 0 3px rgba(0,0,0,0.1);
+	cursor: pointer;
+}
+.title {
+	padding: 10px;
+	float: left;
+	color: #fff;
+	font-weight: 800;
+	font-size: 20px;
+	text-shadow: 1px 1px rgba(0,0,0,0.2);
+	text-transform: uppercase;
+	/*border-right: 1px solid rgba(255,255,255,0.3);*/
+}
+.price {
+	padding: 10px;
+	float: left;
+	color: rgba(0,0,0,0.4);
+	font-weight: 800;
+	font-size: 20px;
+	text-shadow: 1px 1px rgba(255,255,255,0.3);
+	text-transform: uppercase;	
+	border-left: 1px solid rgba(0,0,0,0.2);
+}
+
+/* colors */
+.yellow {
+	background: rgb(255,214,94);
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZDY1ZSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmZWJmMDQiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  rgba(255,214,94,1) 0%, rgba(254,191,4,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,214,94,1)), color-stop(100%,rgba(254,191,4,1)));
+	background: -webkit-linear-gradient(top,  rgba(255,214,94,1) 0%,rgba(254,191,4,1) 100%);
+	background: -o-linear-gradient(top,  rgba(255,214,94,1) 0%,rgba(254,191,4,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(255,214,94,1) 0%,rgba(254,191,4,1) 100%);
+	background: linear-gradient(top,  rgba(255,214,94,1) 0%,rgba(254,191,4,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffd65e', endColorstr='#febf04',GradientType=0 );
+}
+
+.yellow:hover {
+	background: rgb(254,191,4);
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZlYmYwNCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmZmQ2NWUiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  rgba(254,191,4,1) 0%, rgba(255,214,94,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(254,191,4,1)), color-stop(100%,rgba(255,214,94,1)));
+	background: -webkit-linear-gradient(top,  rgba(254,191,4,1) 0%,rgba(255,214,94,1) 100%);
+	background: -o-linear-gradient(top,  rgba(254,191,4,1) 0%,rgba(255,214,94,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(254,191,4,1) 0%,rgba(255,214,94,1) 100%);
+	background: linear-gradient(top,  rgba(254,191,4,1) 0%,rgba(255,214,94,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#febf04', endColorstr='#ffd65e',GradientType=0 );
+}
+
+.green {
+	background: rgb(143,200,0);
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzhmYzgwMCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM2NjhlMDAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  rgba(143,200,0,1) 0%, rgba(102,142,0,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(143,200,0,1)), color-stop(100%,rgba(102,142,0,1)));
+	background: -webkit-linear-gradient(top,  rgba(143,200,0,1) 0%,rgba(102,142,0,1) 100%);
+	background: -o-linear-gradient(top,  rgba(143,200,0,1) 0%,rgba(102,142,0,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(143,200,0,1) 0%,rgba(102,142,0,1) 100%);
+	background: linear-gradient(top,  rgba(143,200,0,1) 0%,rgba(102,142,0,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#8fc800', endColorstr='#668e00',GradientType=0 );
+}
+.green:hover {
+	background: rgb(102,142,0);
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzY2OGUwMCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM4ZmM4MDAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  rgba(102,142,0,1) 0%, rgba(143,200,0,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(102,142,0,1)), color-stop(100%,rgba(143,200,0,1)));
+	background: -webkit-linear-gradient(top,  rgba(102,142,0,1) 0%,rgba(143,200,0,1) 100%);
+	background: -o-linear-gradient(top,  rgba(102,142,0,1) 0%,rgba(143,200,0,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(102,142,0,1) 0%,rgba(143,200,0,1) 100%);
+	background: linear-gradient(top,  rgba(102,142,0,1) 0%,rgba(143,200,0,1) 100%);
+/*	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#668e00', endColorstr='#8fc800',GradientType=0 ); */
+}
+
+
+	</style>
+	
+<script type="text/javascript">
+
+	function saveuserating(usefullID)
+	{
+//alert("id value is :"+usefullID);
+		splitspace = usefullID.split(" ");
+		splitdash = splitspace[0].split("-");
+		ratedvalue = splitdash[1]; //PRODUCT RATING
+		CategoryValue = splitspace[1];
+		ProductValue = splitspace[2];
+		console.log("Rated Values = "+ratedvalue);
+		console.log("Category Values = "+CategoryValue);
+		console.log("Product Values = "+ProductValue);
+		var cartproductid = $('#productidValue-'+CategoryValue+'-'+ProductValue).val();//RATED PRODUCT ID
+//DELETE THE INPUT TYPE HIDDEN FOR PRODUCT RATING
+		//console.log("Product id::"+cartproductid);
+		//console.log("Product rating::"+productrating);
+		var params = {CartProductID: cartproductid,
+					  ProductRating: ratedvalue 	 };
+		$.ajax({
+	        url: 'http://localhost:3000/RateProduct',
+	        dataType: "text",
+	        data: params,
+	        success: function(data) 
+	        {	
+	        	if(data=='success'){
+	        		console.log("producted rated successfully.");
+	        		//window.location.href = "/productcartdetails";
+	        	}
+	        	else if(data=='loginfirst'){
+	        		console.log("need to login first");
+	        		window.location.href = "/login";	
+	        	}
+	        	else{
+	            	console.log(data);
+	            	//window.location.href = "/productcartdetails";
+	        	}    
+	        },	
+	        error: function(jqXHR, textStatus, errorThrown) 
+	        {
+	            console.log('error ' + textStatus + " " + errorThrown);
+	        }
+    	});
+	}
+
+	function userreview(someflag)
+	{
+		var valueid = someflag.split("-");
+		console.log("Value of id = "+valueid[1]);   
+		console.log("product Id value is = "+ $('#productkid-'+valueid[1]).val());
+		console.log("User comment value is ="+ $('#usercomment-'+valueid[1]).val());
+	}
+</script>
+
+</head>
+<body>
+<!-- Top -->
+<div id="top">
+	<div class="shell">
+		<!-- Call Header -->
+		<% include header %>
+		<!-- End Header -->
+		<!-- Slider -->
+		<% include slider %>
+		<!-- End Slider -->
+	</div>
+</div>
+<!-- Top -->
+
+<!-- Main -->
+<div id="main">
+	<div class="shell">
+		
+		<!-- call optionsNAV(second white navigation) -->
+		<% if(user)
+		{	var totalcartamount=0;
+			console.log("cartdetails are :::::::: "+cartdetails+"::::::");
+			for(var flg=0; flg<cartdetails.length; flg++)
+			{
+				var totalcartamount=totalcartamount+cartdetails[flg].productPrice;
+			}
+		}
+		%>
+			<div class="options">
+				<div class="search">
+					<form action="" method="post">
+						<span class="field"><input type="text" class="blink" value="SEARCH" title="SEARCH" /></span>
+						<input type="text" class="search-submit" value="GO" />
+					</form>
+				</div>
+				<span class="left"><a href="#">Advanced Search</a></span>
+				
+				<div class="right">
+					<span class="cart">
+						<a href="/productcartdetails" class="cart-ico">&nbsp;</a>
+						<% if(user){ %>
+							<strong><%= totalcartamount %>&nbsp;&#x20b9;</strong>
+						<% }else{ %>
+							<strong>0&nbsp;&#x20b9;</strong>
+						<% } %>
+						
+					</span>
+					<span class="left more-links">
+						<!--<a href="#">Checkout</a>-->
+						<a href="/productcartdetails">Details</a>
+					</span>
+				</div>
+			</div>
+		<!-- end optionsNAV -->
+		
+		<!-- Content -->
+		<div id="content" style="height:100%;">
+			<!-- Tabs -->
+			<div class="tabs">
+				<ul>
+					<%
+					for(var i=0; i<categories.length; i++) { 
+	                    if(categories[i].CategoryStatus=='Online'){ 
+	                    	%>
+	                    <li><a href="#" class="active"><span class='category <%= i %>'><%= categories[i].CategoryName %></span></a></li>
+	                <% }} %>
+				   <!-- <li><a href="#" class="active"><span>Safety Shoes</span></a></li>
+				    <li><a href="#"><span>Sport Shoes</span></a></li>-->
+				    <li><a href="#" class="red"><span>More Shoes</span></a></li>
+				</ul>
+			</div>
+			<!-- Tabs -->
+			<!-- Container -->
+			<div id="container">
+				<div class="tabbed">
+					<!-- First Tab Content -->
+					<% for(var j=0; j<categories.length; j++) 
+					{ %>
+						<div class="tab-content" style="">
+							<div class="items">
+								<div class="cl">&nbsp;</div>
+							    <ul>
+							      <% for(var i=0; i<products.length; i++) 
+							      { 
+							      	if(products[i].ProductCategory==categories[j].CategoryName && products[i].ProductAvailable=='Online') { %>
+							      	<li class="perproduct cat<%= j %> product<%= i %>" height="300px" width="150px">
+								    	<div class="image" style="height:200px;">
+								    		<img class="productpagelink" id="cat<%= j %> prod<%= i %>" height="180px;" width="100%;" style="cursor:pointer;" src="<%= products[i].ProductImage %>" alt="<%= products[i].ProductImage %>" />
+								    	</div>
+								    	<p>
+								    		<input type="hidden" id="productclass" value="prod<%= i %>">
+								    		<input type="hidden" id="categoryclass" value="cat<%= j %>">
+								    		<b>Product Name:</b> <span><span id="cat<%= j %> prod<%= i %>" class="productpagelink" style="color:black; font-weight:bold; cursor:pointer"><%= products[i].ProductName %></span></span><br />
+								    										    		
+								    	</p>
+<span id="ratingsForm">
+	<div class="stars">
+		<input type="hidden" id="productidValue-<%= j %>-<%= i %>" value="<%= products[i]._id %>"><!--id=".. -cat-prod" -->
+			<% 
+				//console.log("ooooooo"+RatingInfo[i]+"oooooo");
+				//console.log("zzzzzz"+productRatingIDinfo[i]+"zzzzzz");
+			%>
+			<% if(RatingInfo[i]==1)
+			{ %>
+				<input type="radio" name="star" class="star-1" selected />
+			<% } %>
+			<label class="star-1" for="star-1" id="star-1 <%= j %> <%= i %>" onclick="saveuserating(this.id)">1</label>
+			
+			<% if(RatingInfo[i]==2)
+			{ %>
+				<input type="radio" name="star" class="star-2" />
+			<% } %>
+			<label class="star-2" for="star-2" id="star-2 <%= j %> <%= i %>" onclick="saveuserating(this.id)">2</label>
+		
+			<% if(RatingInfo[i]==3)
+			{ %>
+				<input type="radio" name="star" class="star-3" />
+			<% } %>
+			<label class="star-3" for="star-3" id="star-3 <%= j %> <%= i %>" onclick="saveuserating(this.id)">3</label>	
+			
+			<% if(RatingInfo[i]==4)
+			{ %>
+				<input type="radio" name="star" class="star-4" />
+			<% } %>
+			<label class="star-4" for="star-4" id="star-4 <%= j %> <%= i %>" onclick="saveuserating(this.id)">4</label>
+		
+			<% if(RatingInfo[i]==5)
+			{ %>
+				<input type="radio" name="star" class="star-5" />
+			<% } %>
+			<label class="star-5" for="star-5" id="star-5 <%= j %> <%= i %>" onclick="saveuserating(this.id)">5</label>
+		
+		<span></span>
+	</div>  
+</span>
+								    	<p class="productprice"><span class="productprice"><b><font color="grey">List Price:</font> </b><font color="green"><strong><del>&#8377;<%= products[i].ProductListPrice %>&nbsp;&#x20b9;</del></strong></font>
+
+								    	</span><br />
+								    	 <b>Sale Price:</b> <font color="#890000"><strong>&#8377;<%= products[i].ProductSalePrice %>&nbsp;&#x20b9;</strong></font></p>
+								    	 <a href="/addtocart?productID=<%= products[i]._id %>&productamount=<%= products[i].ProductSalePrice %>"><img src="images/addtocartimage.png" ></a>
+								    </li>
+								    <div class="subpages cat<%= j %> prod<%= i %>" style="position:static; border:4px solid blue; height:100%; width:100%;">
+								    	<table>
+								    		<tr>
+								    			<td style="width:50%"><div class="productimage" style="position:static; border:2px solid red; width:100%; height:500px; ">
+										    		<img src="<%= products[i].ProductImage %>" alt="<%= products[i].ProductImageAltText %>" height="100%" width="100%" />	
+										    	</div></td>
+										    	<td style="width:50%">
+											    	<div class="productpricedetails" style="position:static; border:2px solid green; width:80%; padding-left:20px; padding-top:30px; padding-right:20px; height:500px; border-left: thick solid silver;">	
+										    		<span style="padding: 25px 25px 25px 25px; margin-left:20px;">
+										    			<span style="font-size: 16px; line-height:20px; color: #000000; font-family: sans-serif; font-weight:bold"><%= products[i].ProductName %></span>
+										    			<h4 style="margin-top: 10px; margin-bottom:30px; word-wrap: break-word;  font-family: 'Dosis', sans-serif; color: grey;"><%= products[i].ProductShortDescription %></h4>
+										    			<table>
+										    				<tr>
+										    					<td><span style="font-size: 22px; font-family: Arial, Helvetica, sans-serif; font-weight: bold; color:green">List Price: <%= products[i].ProductListPrice %>&nbsp;&#x20b9;</span><br><br />
+										    			<span style="font-size: 22px; font-family: Arial, Helvetica, sans-serif; font-weight: bold; color:#890000">Offer Price: <%= products[i].ProductSalePrice %>&nbsp;&#x20b9;</span><br />	</td>
+										    			<td><span style="margin-left:60px">Show Product Rating</span></td>
+										    				</tr>
+										    			</table>
+										    			<link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+														<!--<button class="button yellow">
+															<div class="title">Add to cart</div>
+															<div class="price">$9,99</div>
+														</button>
+															
+														<div style="clear:both;"></div>
+														-->	
+														<button class="button green">
+															<div class="title">Add to cart</div>
+															<div class="price"><%= products[i].ProductSalePrice %>&nbsp;&#x20b9;</div>
+														</button>	
+
+										    			<h1 style="margin-top:10px;">Description</h1>
+								    					<p style="font-size:15px; padding-top:15px; line-height: 1.5;"><%= products[i].ProductDetailedDescription %></p>
+
+										    		</span>
+										    		</div>
+									    		</td>
+								    		</tr>
+								    	</table>
+
+								    	<div class="recomendItms" style="padding-top:20px; border:4px dotted red; width:100%;margin-top: 50px;">
+								    	
+								    	<div style="margin-top:30px; margin-left:15%; width:70%; border:2px solid yellow ">
+									    	<hr />
+									    	<h2 style="padding-top:10px; padding-bottom:10px; padding-left:5px">User Reviews</h2>
+									    	<hr /><br>
+								    		<font style="display:block; font-size:14px; font-weight:bold; color:grey; margin-left:5px ">Rate Product:</font> 
+								    		<span id="ratingsForm" class="strating">
+											<div class="stars strating">
+											<input type="radio" name="star" class="star-1 strating" id="star-1" />
+											<label class="star-1" for="star-1 strating">1</label>
+											<input type="radio" name="star" class="star-2 strating" id="star-2" />
+											<label class="star-2 strating" for="star-2">2</label>
+											<input type="radio" name="star" class="star-3 strating" id="star-3" />
+											<label class="star-3 strating" for="star-3">3</label>
+											<input type="radio" name="star" class="star-4 strating" id="star-4" />
+											<label class="star-4 strating" for="star-4">4</label>
+											<input type="radio" name="star" class="star-5 strating" id="star-5" />
+											<label class="star-5 strating" for="star-5">5</label>
+											<span></span>
+											</div>  
+											</span>	<br/>
+											<input type="hidden" name="productkid" id="productkid-<%= i %>" value="<%= products[i]._id %>">
+											<font style="font-size:14px; font-weight:bold; color:grey; margin-left:5px">Enter your review here:</font><br/>
+											<textarea cols="98%" rows="6" id="usercomment-<%= i %>"></textarea>
+								    		<button class="button green" id="reviewbutton-<%= i %>" onclick="userreview(this.id)">
+												<div class="title">Submit</div>
+											</button>
+											</div>
+								    	</div>
+								    </div>
+							      <% } } %>
+							    </ul>
+							</div>	      
+						</div>
+					<% } %>
+				</div>	
+			</div>
+<!-- End Footer -->
+			<!-- End Container -->
+		</div>
+		<!-- End Content -->
+		<div class="brands" style="margin-top:30px;">
+			<h3>Brands</h3>
+			<div class="logos">
+				<a href="#"><img src="css/css_newtheme/images/logo1.gif" alt="" /></a>
+				<a href="#"><img src="css/css_newtheme/images/logo2.gif" alt="" /></a>
+				<a href="#"><img src="css/css_newtheme/images/logo3.gif" alt="" /></a>
+				<a href="#"><img src="css/css_newtheme/images/logo4.gif" alt="" /></a>
+				<a href="#"><img src="css/css_newtheme/images/logo5.gif" alt="" /></a>
+				
+			</div>
+		</div>
+		<!--Call Footer -->
+		<% include footer %>
+		  
+	</div>
+</div>
+<!-- End Main --> 
+<style type="text/css">
+	.subpages
+	  { 
+	  	display: none;
+	  }
+</style>
+	<script type="text/javascript">
+	   $('.category').click(function(){
+	   		$('.perproduct').show();
+	   		$('.subpages').css('display', 'block');
+	   });
+	   $('.productpagelink').click(function(){
+	   		//console.log(this.id);	   		
+	   		var idvalue = this.id+"";
+	   		var classvalues = idvalue.split(" ");
+	   		$('.'+classvalues[0]).hide();
+	   		$('.'+classvalues[1]).show();	
+	   });
+
+	</script>
+
+</body>
+</html>

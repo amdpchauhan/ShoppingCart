@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Shop Homepage - Start Bootstrap Template</title>
+
+    <script src="js/jquery.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/shop-homepage.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript">
+        function setItemPayment(itemID)
+        {
+            <% 
+            if(!user)
+            {
+            %>
+                 window.location="http://localhost:3000/login?redirected=1";
+            <%
+            }
+            else
+            {
+            %>
+                var itemPRICE = itemID.replace(/\D/g,'');
+                var itemNAME = itemID.replace(/[0-9]/g, '');
+                document.getElementById("paymentamount").value = itemPRICE;
+                document.getElementById("productname").value = itemNAME;
+                return true;
+            <%
+            }
+            %>
+        }
+    </script>
+</head>
+<body>
+<form method="post" action="https://www.sandbox.paypal.com/cgi-bin/webscr" target="paypal">
+         <!--  <b> <a href="/login">Login</a></b><br />
+            <b><a href="/register">Register</a></b><br /> -->
+
+<% include header.ejs %>
+
+<% if ( sessionFlash && sessionFlash.message) { %>
+<div class="<%= sessionFlash.type %>" style="width:100%; height:30px; ">
+    <span style="font-weight:bold; text-align:center">
+    <strong>FLASH!</strong> <%= sessionFlash.message %></span>
+</div>
+
+<% } %>
+    <!-- Page Content -->
+    <div class="container">
+    
+        <div class="row">
+                <div class="col-md-3">
+                <div class="list-group">
+                <% for(var i=0; i<categories.length; i++) { 
+                    if(categories[i].CategoryStatus=='Online'){ %>
+                    <a href="http://localhost:3000/?CatSelected=<%= categories[i].CategoryName %>" class="list-group-item"><%= categories[i].CategoryName %></a>
+                <% }} %>
+                </div>
+                <div style="border: 0px solid yellow;">
+                    <img src="images/banner/add123.gif" style="width: 210px; height: 940px; ">   
+                 </div>
+            </div>
+
+            <div class="col-md-9">
+
+                <div class="row carousel-holder">
+
+                    <div class="col-md-12">
+                        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+                            <ol class="carousel-indicators">
+                                <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                                <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+                                <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+                            </ol>
+                            <div class="carousel-inner">
+                                <div class="item active">
+                                    <img class="slide-image" src="images/banner/0.jpg" alt="" style="height:240px; width:100%; ">
+                                </div>
+                                <% for(i=1; i<4; i++){ %>
+                                     <div class="item">
+                                        <img class="slide-image" src="images/banner/<%= [i] %>.jpg" alt="" style="height:240px; width:100%;">
+                                    </div>  
+                                <% } %>
+                                
+                            </div>
+                            <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+                                <span class="glyphicon glyphicon-chevron-left"></span>
+                            </a>
+                            <a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+                                <span class="glyphicon glyphicon-chevron-right"></span>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+        
+      <input type="hidden" name="cmd" value="_cart">
+        <input type="hidden" name="business" value="amardeep.chauhan@laitkor.com">
+        
+        <input type="hidden" name="item_number" value="123">
+        
+        <input type="hidden" name="shipping" value="1.00">
+        <input type="hidden" name="shipping2" value="0.50">
+        <input type="hidden" name="handling" value="2.00">
+        <input type="hidden" name="currency_code" value="INR">
+        <input type="hidden" name="return" value="http://localhost:3000/paypalthank">
+        <input type="hidden" name="undefined_quantity" value="1">
+        <input type="hidden" name="add" value="1"> 
+        <input type="hidden" name="amount" id="paymentamount" value="">
+        <input type="hidden" name="item_name" id="productname" value="">
+                <div class="row">
+                    <% for(var i=0; i<products.length; i++) {
+                    if(products[i].ProductAvailable=="Online"){  %>     
+                              
+                        <div class="col-sm-4 col-lg-4 col-md-4">
+                            <div class="thumbnail"> 
+                             <img src="<%= products[i].ProductImage %>" alt="<%= products[i].ProductImageAltText %>" style="height:150px; width:150px;">
+                                <div class="caption">
+                                    <h4><a href="<%= products[i].ProductImageLink %>" style="align:center"><%= products[i].ProductName %></a></h4>
+                                    <h4 class="pull-right" style="align:left"><del>&#8377;<%= products[i].ProductListPrice %></del></h4>
+                                    <h4 class="pull-right" style="align:right">&#8377;<%= products[i].ProductSalePrice %></h4>
+                                    <br>
+                                    <p><%= products[i].ProductShortDescription %></p>
+                                </div>
+                                <div class="ratings">
+                                    <p class="pull-right">15 reviews</p>
+                                    <p>
+                                        <span class="glyphicon glyphicon-star"></span>
+                                        <span class="glyphicon glyphicon-star"></span>
+                                        <span class="glyphicon glyphicon-star"></span>
+                                        <span class="glyphicon glyphicon-star"></span>
+                                        <span class="glyphicon glyphicon-star"></span>
+                                    </p>
+                                </div>
+
+<input type="image" src="https://www.tipsandtricks-hq.com/ecommerce/wp-content/uploads/2009/10/add-to-cart-green1.png" border="0" name="submit" id="<%= products[i].ProductSalePrice %><%= products[i].ProductName %>" width="87" height="23" alt="Make payments with PayPal - it's fast, free and secure!" onclick="return setItemPayment(this.id);">
+                            
+                            </div>
+                        </div>
+                    <% }} %>
+                </div>
+        </form>        
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+
+    <div style="background: #101010; color: white; width:100%;" class="container">
+
+        <hr>
+<% include footer.ejs %>
+        <!-- Footer -->
+       
+
+    </div>
+    <!-- /.container -->
+
+    <!-- jQuery -->
+            <script src="js/jquery.js"></script>
+            <!-- Bootstrap Core JavaScript -->
+            <script src="js/bootstrap.min.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/minicart/3.0.6/minicart.min.js"></script>
+    <script>
+    // paypal.minicart.render(config)
+
+paypal.minicart.render({
+    action: "https://www.sandbox.paypal.com/cgi-bin/webscr"
+});
+
+    </script>
+ </body>
+ </html>
